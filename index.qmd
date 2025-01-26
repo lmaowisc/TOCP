@@ -1,0 +1,1033 @@
+---
+title: "Tailoring Online Continence Promotion (TOCP)"
+author: "Lu Mao"
+date: today
+format: 
+  html:
+    toc: true
+    toc-depth: 4
+editor: visual
+execute:
+  echo: false
+  warning: false
+---
+
+```{r}
+#| file: R/basic_functions_pkgs.R
+```
+
+```{r}
+# read in data from data/ folder
+tmp <- read_excel("data/Merged_Baseline_and_1_month_Data_4_26_24_note_as_of_4_26_393_completed_1mo_all_393_in_here_v2.xlsx", sheet = 1)
+
+# ?read_excel
+
+# tmp |>
+#   select(
+#     study_id, contains("date")
+#   )
+# 
+# nrow(tmp)
+
+# screening_survey_timestamp x
+# baseline_survey_timestamp
+# Date all future weekly emails is based on
+# Date 1st weekly email was sent x
+# first time clicked on email link
+
+orb <- read_excel("data/data file orbita final.xlsx", sheet = 1,
+                  col_names= c("study_id", NA, NA, "domain_id", "page_num", "click_time"),
+                  skip = 1) |> 
+  select(study_id, domain_id, page_num, click_time)
+
+# orb |> 
+#   count(study_id)
+
+# warnings()
+```
+
+```{r}
+
+# get the time of first click and
+# left join with tmp
+# and compute difference bt baseline_survey_timestamp and first_click
+
+# tmp1 <- orb |> 
+#   group_by(study_id) |> 
+#   summarize(first_click = min(click_time, na.rm =TRUE)) |>
+#   right_join(tmp, by = "study_id") |>
+#   mutate(
+#     time_to_first_click = as.numeric(difftime(first_click, baseline_survey_timestamp, units = "days"))
+#   ) |> 
+#   select(study_id, baseline_survey_timestamp, first_click, time_to_first_click, rand_round_2)
+
+
+# summarize the time_to_first_click by rand_round_2
+# using tbl_summary()
+# compute both median and mean
+
+# tmp1 |> 
+#   tbl_summary(by = rand_round_2,
+#               include = time_to_first_click,
+#               type = all_continuous() ~ "continuous2",
+#               statistic = all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})")
+#   )
+
+# ?tbl_summary
+
+# tmp1 |> 
+  # count(rand_round_2)
+
+
+# plot the distribution of time_to_first_click by randomization status
+# using both boxplot and scatterplot
+
+# tmp1 |> 
+#   ggplot(aes(x = factor(rand_round_2), y = time_to_first_click)) +
+#   # geom_boxplot() +
+#   geom_jitter(width = 0.2, alpha = 0.5) +
+#   labs(
+#        x = "Randomization status",
+#        y = "Time to first click (days)") +
+#   theme_minimal() +
+#   scale_x_discrete(labels = c("Control", "Tailored")) +
+#   theme(
+#     panel.grid.major.x = element_blank()
+#   )
+
+
+# create baseline data
+
+
+
+
+
+```
+
+## Statistical analysis
+
+*Description of methods.*
+
+## Baseline characteristics
+
+### Demographics and health information
+
+Patient demographics, health status, medical and surgical histories at baseline (Sec. 5 of `baseline_survey`) are summarized in @tbl-demo.
+
+```{r}
+#| label: tbl-demo
+#| tbl-cap: Patient demographics and health information by randomized arm.
+
+
+armfmt <- c("1" = "Control", "2" = "Tailored")
+ynfmt <- c("1" = "Yes", "2" = "No", "3" = NA, "99" = NA)
+
+
+
+## hisp
+# 1 Hispanic/Latino
+# 2 Non-Hispanic
+# 3 Do not wish to provide
+hispfmt <- c("1" = "Hispanic/Latino", "2" = "Non-Hispanic", "3" = "Do not wish to provide")
+
+
+# 1	ss_eligible_race___1	American Indian or Alaska Native
+# 2	ss_eligible_race___2	Asian or Asian American
+# 3	ss_eligible_race___3	Black or African American
+# 4	ss_eligible_race___4	Native Hawaiian or Pacific Islander
+# 5	ss_eligible_race___5	White
+# 6	ss_eligible_race___6	Other
+# 7	ss_eligible_race___7	Do not wish to provide
+
+racefmt <- c(
+  "1" = "American Indian or Alaska Native",
+  "2" = "Asian or Asian American",
+  "3" = "Black or African American",
+  "4" = "Native Hawaiian or Pacific Islander",
+  "5" = "White",
+  "6" = "Other/More than one",
+  "7" = "Do not wish to provide"
+)
+
+# 1	8th grade or lower
+# 2	Some high school
+# 3	High school diploma or GED
+# 4	Vocational school or other specialized training
+# 5	Some college
+# 6	College degree (Associate's or Bachelor's)
+# 7	Master's or Doctorate degree
+# 8	Do not wish to provide
+
+edufmt <- c(
+  "1" = "8th grade or lower",
+  "2" = "Some high school",
+  "3" = "High school diploma or GED",
+  "4" = "Vocational school or other specialized training",
+  "5" = "Some college",
+  "6" = "College degree (Associate's or Bachelor's)",
+  "7" = "Master's or Doctorate degree",
+  "8" = "Do not wish to provide"
+)
+
+# 0	Retired
+# 1	Not working due to a disability
+# 2	Not working for another reason
+# 3	Stay at home parent or caregiver
+# 4	Working full-time
+# 5	Working part-time
+# 6	Looking for work
+# 99	Choose not to answer
+
+workfmt <- c(
+  "0" = "Retired",
+  "1" = "Not working due to a disability",
+  "2" = "Not working for another reason",
+  "3" = "Stay at home parent or caregiver",
+  "4" = "Working full-time",
+  "5" = "Working part-time",
+  "6" = "Looking for work",
+  "99" = "Choose not to answer"
+)
+
+# 1 Excellent
+# 2 Very good
+# 3 Good
+# 4 Fair
+# 5 Poor
+# 6 Very poor
+# 99 Choose not to answer
+
+hlth4fmt <- c(
+  "1" = "Excellent",
+  "2" = "Very good",
+  "3" = "Good",
+  "4" = "Fair",
+  "5" = "Poor",
+  "6" = "Very poor",
+  "99" = "Choose not to answer"
+)
+
+# demographic data
+
+tmp1 <- tmp |> 
+  select(
+    study_id, rand_round_2, baseline_survey_timestamp, ss_age, ss_sex, contains("ss_eligible_race"), ss_eligible_hisp,
+    ss_eligible_gender, ss_eligible_edu, work_status_bl, height_bl, weight_bl,
+    pcp_bl, contains("type_of_insurance_bl"),  pregnancies_bl,
+    sf_q1_bl, # overall health,
+    contains("medcond_bl"), contains("relevantsurghx_bl") 
+    
+  )
+
+# View(tmp1)
+
+# tmp1 |> 
+#   count(height_bl == 34)
+# tmp1 |> 
+#   mutate(
+#     mm = type_of_insurance_bl___1 + type_of_insurance_bl___2,
+#     .after = study_id
+#   ) |> 
+#   filter(
+#     mm > 1
+#   )
+
+tmp2 <- tmp1 |> 
+  mutate(
+    trt = refmt(rand_round_2, armfmt),
+    race = case_when(
+      ss_eligible_race___1 == 1 ~ 1,
+      ss_eligible_race___2 == 1 ~ 2,
+      ss_eligible_race___3 == 1 ~ 3,
+      ss_eligible_race___4 == 1 ~ 4,
+      ss_eligible_race___5 == 1 ~ 5,
+      ss_eligible_race___6 == 1 ~ 6,
+      ss_eligible_race___7 == 1 ~ 7
+    ),
+      ## address multiplicity
+      race_n = ss_eligible_race___1 + ss_eligible_race___2 + ss_eligible_race___3 + ss_eligible_race___4 + 
+      ss_eligible_race___5 + ss_eligible_race___6,
+    # filter(race_n > 1) |> 
+    # select(study_id, ss_eligible_race___1: ss_eligible_race___7, race_n)
+    race = if_else(race_n > 1, 6, race),
+    race = refmt(race, racefmt),
+    hisp = refmt(ss_eligible_hisp, ynfmt),
+    ss_eligible_edu = refmt(ss_eligible_edu, edufmt),
+    work_status_bl = refmt(work_status_bl, workfmt),
+    pcp_bl = refmt(pcp_bl, ynfmt),
+    health_insure = case_when(
+      type_of_insurance_bl___1 + type_of_insurance_bl___2 > 0 ~ "Medicare/Medicaid",
+      type_of_insurance_bl___3 + type_of_insurance_bl___4  + type_of_insurance_bl___5 + type_of_insurance_bl___6  + type_of_insurance_bl___7 > 0 ~ "Other types of insurance",
+      type_of_insurance_bl___8 == 1 ~ "I am not sure",
+      type_of_insurance_bl___0 == 1 ~ "None"
+    ),
+    health_insure = factor(health_insure, levels = c("Medicare/Medicaid", "Other types of insurance", "I am not sure", "None")),
+    preg_num = case_when(
+      pregnancies_bl == 0 ~ "0",
+      pregnancies_bl == 1 ~ "1",
+      pregnancies_bl %in% 2:3 ~ "2-3",
+      pregnancies_bl == 99 ~ "Choose not to answer",
+      pregnancies_bl >= 4 ~ "4+"
+    ),
+    sf_q1_bl = refmt(sf_q1_bl, hlth4fmt),
+    # BMI
+    height_cm = if_else(height_bl == 34, NA, (3 * 12 + 10 + height_bl) * 2.54),
+    weight_kg = if_else(weight_bl == 999, NA, weight_bl * 0.453592),
+    bmi = weight_kg / (height_cm / 100)^2
+    )
+
+
+
+
+# label
+
+var_label(tmp2) <- list(
+  ss_age = "Age (years)",
+  race = "Race",
+  hisp = "Hispanic/Latino",
+  trt = "Randomization status",
+  
+  height_cm = "Height (cm)",
+  weight_kg = "Weight (kg)",
+  bmi = "Body mass index (kg/m^2)",
+  
+  ss_eligible_edu = "Education",
+  work_status_bl = "Work status",
+  pcp_bl = "Have a primary care provider",
+  health_insure = "Health insurance",
+  preg_num = "Number of pregnancies",
+  sf_q1_bl = "Overall health in past 4 weeks (self-rated)",
+
+  
+  medcond_bl___1 = "High blood pressure",
+  medcond_bl___2 = "Diabetes",
+  medcond_bl___3 = "Obesity",
+  medcond_bl___4 = "Memory problems",
+  medcond_bl___5 = "Anxiety",
+  medcond_bl___6 = "Depression",
+  medcond_bl___7 = "Cancer",
+  medcond_bl___8 = "Chronic pain",
+  relevantsurghx_bl___1 = "Hysterectomy",
+  relevantsurghx_bl___2 = "Cholecystectomy",
+  relevantsurghx_bl___3 = "Surgery for pelvic organ prolapse",
+  relevantsurghx_bl___4 = "Mesh sling for urinary incontinence",
+  relevantsurghx_bl___5 = "Other surgery for urinary incontinence",
+  relevantsurghx_bl___6 = "Surgery for bowel incontinence"
+)
+
+
+# demo <- tmp2 |> 
+#   tbl_summary(
+#     by = trt,
+#     include = c(ss_age, race, hisp, height_cm, weight_kg, bmi, ss_eligible_edu, work_status_bl, pcp_bl, health_insure,
+#                 preg_num, sf_q1_bl, medcond_bl___1:medcond_bl___8, relevantsurghx_bl___1:relevantsurghx_bl___6),
+#   ) |> 
+#   add_p() |> 
+#   italicize_levels()
+# 
+# saveRDS(demo, "data/demo.rds")
+
+demo <- readRDS("data/demo.rds")
+
+demo
+```
+
+<!-- baseline symptom bother, severity, behaviors, and care seeking patterns -->
+
+### Health behavior
+
+Health behaviors that may impact bladder or bowel health at baseline (Sec. 2 of `baseline_survey`) are summarized by randomized arm in @tbl-base-behav.
+
+```{r}
+#| label: tbl-base-behav
+#| tbl-cap: Baseline health behaviors by randomized arm.
+ 
+## formats
+
+# 1	Once per month or less
+# 2	A few times per month
+# 3	At least once per week
+# 4	Several times per week
+# 5	At least once per day
+# 6	Several times per day
+# 99	Choose not to answer
+kegelfmt <- c(
+  "1" = "Once per month or less",
+  "2" = "A few times per month",
+  "3" = "At least once per week",
+  "4" = "Several times per week",
+  "5" = "At least once per day",
+  "6" = "Several times per day",
+  "99" = "Choose not to answer"
+)
+# 1	Less than I should
+# 2	About what I should
+# 3	More than I should
+# 99	Choose not to answer
+fiberfmt <- c(
+  "1" = "Less than I should",
+  "2" = "About what I should",
+  "3" = "More than I should",
+  "99" = "Choose not to answer"
+)
+# 1	Less than I should
+# 2	About what I should
+# 3	More than I should
+# 99	Choose not to answer
+fluidfmt <- c(
+  "1" = "Less than I should",
+  "2" = "About what I should",
+  "3" = "More than I should",
+  "99" = "Choose not to answer"
+)
+# 0	I do not drink coffee
+# 1	Less than 3 servings per week
+# 2	3-6 servings per week
+# 3	1 serving (12 ounces) per day
+# 4	2 servings (24 ounces) per day
+# 5	3 or more servings (36 ounces) per day
+# 99	Choose not to answer
+coffeefmt <- c(
+  "0" = "I do not drink coffee",
+  "1" = "Less than 3 servings per week",
+  "2" = "3-6 servings per week",
+  "3" = "1 serving (12 ounces) per day",
+  "4" = "2 servings (24 ounces) per day",
+  "5" = "3 or more servings (36 ounces) per day",
+  "99" = "Choose not to answer"
+)
+# 0	I do not drink soda with caffeine
+# 1	Less than 3 servings per week
+# 2	3-6 servings per week
+# 3	1 serving (12 ounces) per day
+# 4	2 servings (24 ounces) per day
+# 5	3 or more servings (36 ounces) per day
+# 99	Choose not to answer
+sodafmt <- c(
+  "0" = "I do not drink soda with caffeine",
+  "1" = "Less than 3 servings per week",
+  "2" = "3-6 servings per week",
+  "3" = "1 serving (12 ounces) per day",
+  "4" = "2 servings (24 ounces) per day",
+  "5" = "3 or more servings (36 ounces) per day",
+  "99" = "Choose not to answer"
+)
+# 1	Less than 1 serving per week
+# 2	1 serving per week
+# 3	2-3 servings per week
+# 4	4-6 servings per week
+# 5	1 serving per day
+# 6	More than 1 serving per day
+# 99	Choose not to answer
+fruitfmt <- c(
+  "1" = "Less than 1 serving per week",
+  "2" = "1 serving per week",
+  "3" = "2-3 servings per week",
+  "4" = "4-6 servings per week",
+  "5" = "1 serving per day",
+  "6" = "More than 1 serving per day",
+  "99" = "Choose not to answer"
+)
+# 0	None
+# 1	Less than $5
+# 2	$5 - $10
+# 3	$11 - $20
+# 4	$21 - $30
+# 5	$31 - $50
+# 6	$51 - $100
+# 7	$101 - $200
+# 8	More than $200
+# 99	Choose not to answer
+moneyfmt <- c(
+  "0" = "None",
+  "1" = "Less than $5",
+  "2" = "$5 - $10",
+  "3" = "$11 - $20",
+  "4" = "$21 - $30",
+  "5" = "$31 - $50",
+  "6" = "$51 - $100",
+  "7" = "$101 - $200",
+  "8" = "More than $200",
+  "99" = "Choose not to answer"
+)
+# 1	less than 4 times per day
+# 2	4-5 times
+# 3	6-8 times
+# 4	9-10 times
+# 5	11-12 times
+# 6	more than 12 times per day
+# 99	Choose not to answer
+voidfmt <- c(
+  "1" = "less than 4 times per day",
+  "2" = "4-5 times",
+  "3" = "6-8 times",
+  "4" = "9-10 times",
+  "5" = "11-12 times",
+  "6" = "more than 12 times per day",
+  "99" = "Choose not to answer"
+)
+# 1	4 hours or more
+# 2	3 hours
+# 3	2 hours
+# 4	1 hour
+# 5	less than 1 hour
+# 99	Choose not to answer
+voidintervalfmt <- c(
+  "1" = "4 hours or more",
+  "2" = "3 hours",
+  "3" = "2 hours",
+  "4" = "1 hour",
+  "5" = "less than 1 hour",
+  "99" = "Choose not to answer"
+)
+
+
+tmp_behav <- tmp |> 
+  select(
+    study_id, rand_round_2, 
+    kegel_freq_bl:voidinterval_bl) |> 
+  mutate(
+    trt = refmt(rand_round_2, armfmt),
+    kegel_freq_bl = refmt(kegel_freq_bl, kegelfmt),
+    fiber_guess_bl = refmt(fiber_guess_bl, fiberfmt),
+    fluid_guess_bl = refmt(fluid_guess_bl, fluidfmt),
+    freq_coffee_bl = refmt(freq_coffee_bl, coffeefmt),
+    freq_soda_bl = refmt(freq_soda_bl, sodafmt),
+    fruit_bl = refmt(fruit_bl, fruitfmt),
+    grnsalad_bl = refmt(grnsalad_bl, fruitfmt),
+    potato_bl = refmt(potato_bl, fruitfmt),
+    vegetable_bl = refmt(vegetable_bl, fruitfmt),
+    vegetjuice_bl = refmt(vegetjuice_bl, fruitfmt),
+    vegetsoup_bl = refmt(vegetsoup_bl, fruitfmt),
+    cereal_bl = refmt(cereal_bl, fruitfmt),
+    wheat_bread_bl = refmt(wheat_bread_bl, fruitfmt),
+    beans_bl = refmt(beans_bl, fruitfmt),
+    use_liner_bl = miss99(use_liner_bl),
+    use_pads_bl = miss99(use_pads_bl),
+    use_depends_bl = miss99(use_depends_bl),
+    incont_money_bl = refmt(incont_money_bl, moneyfmt),
+    daytimevoids_bl = refmt(daytimevoids_bl, voidfmt),
+    voidinterval_bl = refmt(voidinterval_bl, voidfmt)
+  )
+
+# colnames(tmp_behav)
+
+var_label(tmp_behav) <- list(
+  kegel_freq_bl = "Kegel squeezes in last 4 weeks",
+  fiber_guess_bl = "Daily fiber intake",
+  fluid_guess_bl = "Daily fluid intake",
+  est_totalfluid_bl = "Estimated total fluid intake",
+  freq_coffee_bl = "Servings of coffee last week",
+  freq_soda_bl = "Servings of soda last week",
+  fruit_bl = "Fruit last 4 weeks",
+  grnsalad_bl = "Green salad last 4 weeks",
+  potato_bl = "Potato last 4 weeks",
+  vegetable_bl = "Vegetable last 4 weeks",
+  vegetjuice_bl = "Vegetable juice last 4 weeks",
+  vegetsoup_bl = "Vegetable soup last 4 weeks",
+  cereal_bl = "Fiber cereal last 4 weeks",    
+  wheat_bread_bl = "Whole wheat/rye bread last 4 weeks",
+  beans_bl = "Beans last 4 weeks",
+  
+  usecontainprod_bl___1 =	"I use panty liners",
+  usecontainprod_bl___2	= "I use pads",
+  usecontainprod_bl___3	= "I use undergarments (e.g., Depends/diapers)",
+  usecontainprod_bl___4	= "I use something else",
+  usecontainprod_bl___5	= "I do not use anything",
+  use_liner_bl = "Number of panty liners used per 24 h",
+  use_pads_bl = "Number of pads used per 24 h",
+  use_depends_bl = "Number of undergarments used per 24 h",
+  incont_money_bl = "Money spent on managing symptoms last month",
+  voidsovernight_bl = "Number of urinations overnight",
+  daytimevoids_bl = "Number of urinations during daytime",
+  voidinterval_bl = "Time between urinations"
+)
+
+
+# 
+# behav <- tmp_behav |>
+#   tbl_summary(by = trt,
+#               include = c(kegel_freq_bl:voidinterval_bl, -usecontainprod_bl___99),
+#               type = list(
+#                 use_liner_bl = "continuous",
+#                 use_pads_bl = "continuous",
+#                 use_depends_bl = "continuous"
+#               ),
+#               # round continuous statistics to first decimal point
+#               digits = list(
+#                 all_continuous() ~ 1
+#               )
+#   ) |>
+#   add_p() |>
+#   italicize_levels()
+
+# # save to file, read file, and print table
+# saveRDS(behav, "data/behav.rds")
+behav <- readRDS("data/behav.rds")
+behav
+
+
+```
+
+### Bladder Symptoms
+
+Bladder symptoms at baseline (Sec. 3 of `baseline_survey`) are summarized by randomized arm in @tbl-base-bladder.
+
+```{r}
+#| label: tbl-base-bladder
+#| tbl-cap: Baseline bladder symptoms by randomized arm.
+
+# colnames(bld_tmp)
+## formats
+# 0	Never
+# 1	About once a week or less often
+# 2	Two or three times a week
+# 3	About once a day
+# 4	Several times a day
+# 5	All the time
+# 99	Choose not to answer
+iciqui_fmt <- c(
+  "0" = "Never",
+  "1" = "About once a week or less often",
+  "2" = "Two or three times a week",
+  "3" = "About once a day",
+  "4" = "Several times a day",
+  "5" = "All the time",
+  "99" = "Choose not to answer"
+)
+# 0	None
+# 2	A small amount
+# 4	A moderate amount
+# 6	A large amount
+# 99	Choose not to answer
+iciqui_howmuchfmt <- c(
+  "0" = "None",
+  "2" = "A small amount",
+  "4" = "A moderate amount",
+  "6" = "A large amount",
+  "99" = "Choose not to answer"
+)
+# 1	Not at all
+# 2	Somewhat
+# 3	Moderately
+# 4	Quite a bit
+# 99	Choose not to answer
+quartfmt <- c(
+  "1" = "Not at all",
+  "2" = "Somewhat/Slightly",
+  "3" = "Moderately",
+  "4" = "Quite a bit/Greatly",
+  "99" = "Choose not to answer"
+)
+# 0	No
+# 1	Yes, but it was not very helpful
+# 2	Yes, and it was helpful
+# 99	Choose not to answer
+bld_helpfmt <- c(
+  "0" = "No",
+  "1" = "Yes, but not very helpful",
+  "2" = "Yes, and helpful",
+  "99" = "Choose not to answer"
+)
+
+refmt_quart <- function(x){
+  refmt(x, quartfmt)
+}
+
+
+bld_tmp <- tmp |> 
+  select(
+    study_id, rand_round_2, 
+    iciqui_leak_bl:bics_hcpnoint_bl) |> 
+  mutate(
+    trt = refmt(rand_round_2, armfmt),
+    iciqui_leak_bl = refmt(iciqui_leak_bl, iciqui_fmt),
+    iciqui_howmuch_bl = refmt(iciqui_howmuch_bl, iciqui_howmuchfmt),
+    iciqui_interfer_bl = miss99(iciqui_interfer_bl),
+    gse_ui1_bl = miss99(gse_ui1_bl),
+    gse_ui2_bl = miss99(gse_ui2_bl),
+    bladderseekhx_bl = refmt(bladderseekhx_bl, bld_helpfmt),
+    across(c(pfiq_bladder_chores_bl:pfiq_bladder_frustrated_bl,
+             bics_nohcp_bl:bics_hcpnoint_bl), refmt_quart)
+  )
+  
+
+# lable the variables
+
+var_label(bld_tmp) <- list(
+  iciqui_leak_bl = "Leakage",
+  iciqui_howmuch_bl = "Amount of leakage",
+  iciqui_interfer_bl = "Leakage interferes with daily life (0-10)",
+
+  iciqui_urineleak_bl___1 = "Urine does not leak",
+  iciqui_urineleak_bl___2 = "Leaks before getting to toilet",
+  iciqui_urineleak_bl___3 = "Leaks when you cough or sneeze",
+  iciqui_urineleak_bl___4 = "Leaks when asleep",
+  iciqui_urineleak_bl___5 = "Leaks when physically active/exercising",
+  iciqui_urineleak_bl___6 = "Leaks when finished urinating and dressed",
+  iciqui_urineleak_bl___7 = "Leaks for no obvious reason",
+  iciqui_urineleak_bl___8 = "Leaks all the time",
+  
+  gse_ui1_bl = "Confidence in controlling urine (0-10)",
+  gse_ui2_bl = "Confidence in preventing urine loss (0-10)",
+  
+  pfiq_bladder_chores_bl = "Ability to do household chores",
+  pfiq_bladder_walk_bl = "Ability to walk/swim/exercise",
+  pfiq_bladder_movie_bl = "Ability to go to movies/concerts",
+  pfiq_bladder_travel_bl = "Ability to travel by car/bus 30min away",
+  pfiq_bladder_social_bl = "Ability to socialize outside home",
+  pfiq_bladder_emotion_bl = "Emotional health (nervousness, depression, etc)",
+  pfiq_bladder_frustrated_bl = "Feeling frustrated",
+  
+  bladderseekhx_bl = "Sought help with health professionals",
+  bics_nohcp_bl = "No health care practitioner to help me",
+  bics_insexp_bl = "Long delays before insurance repays",
+  bics_inscomp_bl = "Insurance too complicated to figure out",
+  bics_csthigh_bl = "Cost of leakage evaluation too high",
+  bics_notrans_bl = "No transportation to office or clinic",
+  bics_waitlng_bl = "Long waiting times for appointments",
+  bics_clncdist_bl = "Office/Clinic too far away",
+  bics_apptfar_bl = "Appointment schedule too far ahead",
+  bics_hrlimit_bl = "Office hours too limited",
+  bics_examine_bl = "Don't like to be examined/asked many questions",
+  bics_hcptime_bl = "Physician/nurse doesn't take time with me",
+  bics_afrsrsprob_bl = "Afraid of serious problem",
+  bics_afraidhcp_bl = "Afraid of health care practitioner",
+  bics_hcpnoint_bl = "HCP not interested in my problem"
+)
+
+# bld <- bld_tmp |> 
+#   select(-iciqui_urineleak_bl___99) |> 
+#   tbl_summary(by = trt,
+#               include = iciqui_leak_bl:bics_hcpnoint_bl,
+#               digits = list(
+#                 all_continuous() ~ 1
+#                 )
+#               ) |>
+#   add_p() |>
+#   italicize_levels()
+#   
+# saveRDS(bld, "data/bld.rds")
+bld <- readRDS("data/bld.rds")
+bld
+```
+
+### Bowel Symptoms
+
+Bowel symptoms at baseline (Sec. 4 of `baseline_survey`) are summarized by randomized arm in @tbl-base-bowel.
+
+```{r}
+#| label: tbl-base-bowel
+#| tbl-cap: Baseline bowel symptoms by randomized arm.
+
+
+# colnames(bwl_tmp)
+## formats
+# 1	Never (less than once per month)
+# 2	Rarely (about once a month)
+# 3	Sometimes (2-3 times a month)
+# 4	Weekly
+# 5	Daily
+# 99	Choose not to answer
+bwl_freqfmt <- c(
+  "1" = "Never (less than once per month)",
+  "2" = "Rarely (about once a month)",
+  "3" = "Sometimes (2-3 times a month)",
+  "4" = "Weekly",
+  "5" = "Daily",
+  "99" = "Choose not to answer"
+)
+refmt_bwl_freq <- function(x){
+  refmt(x, bwl_freqfmt)
+}
+refmt_yn <- function(x){
+  refmt(x, ynfmt)
+}
+
+
+bwl_tmp <- tmp |> 
+  select(
+    study_id, rand_round_2, 
+    fvq_bmconst_bl:bowelseekhx_bl) |> 
+  mutate(
+    trt = refmt(rand_round_2, armfmt),
+    across(smis_solid_bl:sis_lifestyle_bl, refmt_bwl_freq),
+    across(smis_padplug_bl:smis_deferdef_bl, refmt_yn),
+    across(gse_abl1_bl:gse_abl2_bl, miss99),
+    bowelseekhx_bl = refmt(bowelseekhx_bl, bld_helpfmt)
+  )
+
+var_label(bwl_tmp) <- list(
+  smis_solid_bl = "Solid stool incontinence",
+  smis_liquid_bl = "Liquid stool incontinence",
+  smis_gas_bl = "Gas incontinence",
+  sis_lifestyle_bl = "Bowel symptoms affecting lifestyle",
+  smis_padplug_bl = "Use of pads/plugs",
+  smis_meds_bl = "Use of medications",
+  smis_deferdef_bl = "Have to rush to toilet when having urge",
+  
+  gse_abl1_bl = "Confidence in controlling bowel (0-10)",
+  gse_abl2_bl = "Confidence in preventing bowel loss (0-10)",
+  bowelseekhx_bl = "Sought help with health professionals"
+)
+
+# bwl <- bwl_tmp |>
+#   tbl_summary(by = trt,
+#               include = smis_solid_bl:bowelseekhx_bl,
+#               digits = list(
+#                 all_continuous() ~ 1
+#               )
+#   )
+# #
+# saveRDS(bwl, "data/bwl.rds")
+bwl <- readRDS("data/bwl.rds")
+bwl
+```
+
+## Engagement in first 4 weeks (Aim 1)
+
+### Presence/absence of a click
+
+```{r}
+
+# left join tmp2 with orb
+df <- tmp2 |> 
+  left_join(orb, by = "study_id") |> 
+  select(
+    study_id, trt, baseline_survey_timestamp, domain_id, page_num, click_time  
+  ) |>
+  mutate(
+    study_id = factor(study_id),
+    time = as.numeric(difftime(click_time, baseline_survey_timestamp, units = "days")),
+    time = if_else(time <=0, 0.01, time),
+    day = ceiling(time)
+  ) |> 
+    arrange(study_id, time)
+
+# df |> View()
+
+# patients with no click?
+id_no_click <- df |> 
+  filter(is.na(time)) |> 
+  pull(study_id)
+
+```
+
+For each day after randomization (`baseline_survey_timestamp`), we determine if a patient clicked on the website. Their click patterns over time by randomization status are shown in @fig-engagement-pat.
+
+```{r}
+#| label: fig-engagement-pat
+#| fig-cap: Patient-level engagement over time by randomization status.
+#| fig-width: 8
+#| fig-height: 12
+
+
+df_day <- df |> 
+  group_by(study_id, trt, day) |> 
+  summarize(
+    n_day = n()
+  ) 
+
+df_day_max <- df_day |> group_by(study_id, trt) |> summarize(daymax = min(max(day), 12 * 7))
+
+# View(df_day_max)
+
+# plot patient-level engagement over time
+# with a dot indicating a click, and a line connecting the dots
+# size of dot is proportional to the number of clicks on that day
+df_day_max |> 
+  ggplot(aes(y = study_id)) +
+    geom_linerange(aes(y = reorder(study_id, daymax, decreasing = TRUE), xmin = 0, xmax = daymax)) +
+  geom_point(data = df_day, aes(x = day)) +
+  geom_vline(xintercept = 0, linewidth = 1) +
+  geom_vline(xintercept = 4 * 7, linewidth = 1, linetype = 2, color = "gray20") +
+  facet_wrap(~trt, scales = "free_y") +
+  # scale_size_continuous(range = c(1, 5)) +
+  scale_x_continuous(limits = c(0, 7 * 12), 
+                     breaks = seq(0, 7 * 12, 7), 
+                     expand = expansion(c(0, 0.05))) +
+  scale_y_discrete(NULL) +
+  labs(
+    x = "Days since baseline",
+    y = "Patient",
+    caption = "A dot represents at least one click on that day"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+# ?reorder
+
+```
+
+Proportion of patients with at least one click per day/week over time by randomization status is shown in @fig-engagement-trt.
+
+```{r}
+#| label: fig-engagement-trt
+#| fig-cap: Proportion of patients with at least one click over time by randomization status.
+#| fig-width: 8
+#| fig-height: 8
+
+
+# plot proportion of daily engagement by randomized arm
+# using bar plots
+
+fig_day <- df_day |> 
+  left_join(tmp2 |> count(trt)) |>
+  group_by(trt, n, day) |> 
+  summarize(
+    num_day = sum(n_day > 0)
+  ) |> 
+  mutate(
+    prop = num_day / n
+  ) |> 
+  ggplot(aes(x = day, y = prop, fill = trt)) +
+  geom_col(position = "dodge") + 
+  scale_x_continuous(limits = c(0, 4 * 7 + .5), breaks = seq(0, 7 * 4, 7)) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(
+    x = "Days since baseline",
+    y = "Proportion engaged",
+    fill = "Randomization status"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+
+# plot proportion of weakly engagement by randomized arm
+# using bar plots
+
+df_week <- df |> 
+  group_by(study_id, trt, week = ceiling(time / 7)) |> 
+  summarize(
+    n_week = n()
+  )
+
+fig_week <- df_week |>
+  left_join(tmp2 |> count(trt)) |>
+  group_by(trt, n, week) |> 
+  summarize(
+    num_week = sum(n_week > 0)
+  ) |> 
+  mutate(
+    prop = num_week / n
+  ) |> 
+  ggplot(aes(x = week, y = prop, fill = trt)) +
+  geom_col(position = "dodge") + 
+  scale_x_continuous(limits = c(0.5, 4.5), breaks = seq(1, 4, 1)) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(
+    x = "Weeks since baseline",
+    y = "Proportion engaged",
+    fill = "Randomization status"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+
+# stack the two figures - combine legends
+fig_day / fig_week + 
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
+```
+
+@fig-engagement-pat and @fig-engagement-trt show that most patients clicked on the website within the first week after randomization. The proportion of patients who clicked on the website decreased over time. The proportion of patients who clicked on the website was simiar between the two arms.
+
+In the first 4 weeks following randomization, the number and proportion of patients who clicked on the website at least once for all 4 weeks (primary endpoint) and at least 3 or 2 weeks are summarized in @tbl-engagement_wk4 and visualized in @fig-engagement_wk4.
+
+```{r}
+#| label: tbl-engagement_wk4
+#| tbl-cap: Engagement in the first 4 weeks by randomization status.
+
+# tmp2 |> 
+#   select(study_id)
+
+df_week4 <- df_week |> 
+  filter(week <= 4) |> 
+  group_by(study_id, trt) |> 
+  summarize(
+    n = n(),
+    wk4 = (n == 4),
+    wk3 = (n >= 3),
+    wk2 = (n >= 2),
+    .groups = "drop"
+  ) |> 
+    right_join(
+      tmp2 |> 
+        select(study_id, trt) |> 
+        mutate(
+          study_id = factor(study_id)
+        )
+    ) |> 
+  mutate(
+    across(wk4:wk2, ~ replace_na(., FALSE))
+  )
+
+
+var_label(df_week4) <- list(
+  wk4 = "All 4 weeks (Primary endpoint)",
+  wk3 = "At least 3 weeks",
+  wk2 = "At least 2 weeks"
+)
+
+df_week4 |> 
+  tbl_summary(
+    by = trt,
+    include = c(wk4, wk3, wk2)
+  ) |>
+  add_p() |> 
+  bold_p()
+
+
+
+```
+
+```{r}
+#| label: fig-engagement_wk4
+#| fig-cap: Proportion of patients engaged in the first 4 weeks by randomization status.
+#| fig-width: 8
+#| fig-height: 4
+
+
+df_week4 |> 
+  pivot_longer(
+    wk4:wk2,
+    values_to = "y",
+    names_to = "endpoint"
+  ) |> 
+  group_by(trt, endpoint) |> 
+  mutate(
+    y = mean(y),
+    endpoint = fct(endpoint, c("wk4", "wk3", "wk2"))
+  ) |> 
+  ggplot(aes(x = endpoint, y = y, fill = trt)) +
+  # barplot of proportion of TRUE for each endpoint
+    geom_col(position = "dodge") +
+    scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+    scale_x_discrete(labels = c("All 4 weeks (Primary endpoint)", "At least 3 weeks", "At least 2 weeks")) +
+    labs(
+      x = NULL,
+      y = "Proportion engaged",
+      fill = NULL
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "top"
+    )
+
+```
+
+There is a higher percentage of patients who clicked on the website for all 4 weeks in the intervention arm compared to the control arm. The difference in the proportion of patients who clicked on the website for at least 3 or 2 weeks between the two arms is not as pronounced.

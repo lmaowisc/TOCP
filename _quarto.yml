@@ -1,0 +1,32 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "TOCP"
+  navbar:
+    background: "#A9D794"
+    left:
+      - href: index.qmd
+        text: Home
+      - href: baseline.qmd
+        text: Baseline
+
+format:
+  html:
+    theme: yeti
+    css: styles.css
+    toc: true
+    linkcolor: "#C5050C"
+    backgroundcolor: "#FFFFFF"
+    grid:
+      sidebar-width: 300px
+      body-width: 1000px
+      margin-width: 300px
+      gutter-width: 1.5rem
+    filters:
+      - newpagelink.lua
+
+
+
+
