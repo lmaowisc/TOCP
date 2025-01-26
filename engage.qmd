@@ -331,7 +331,7 @@ tbl_merge(list(wk4_tbl, wk24_tbl),
 ```
 
 The pages visited most frequently (top 10 in frequency of clicks) are shown in @tbl-page-rank
-(page number codebook).
+(page number [codebook](https://lmaowisc.github.io/TOCP/page_number_code.xlsx)).
 
 ```{r}
 #| label: tbl-page-rank
