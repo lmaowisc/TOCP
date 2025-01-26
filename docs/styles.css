@@ -12,11 +12,10 @@ a {text-decoration: none; }
 }
 
 
-/* Optional: Change color on hover */
-.toc a:hover {
-    color: #A9D794; /* Replace with hover color */
+/* Optional: Change the TOC link hover color */
+.sidebar-nav .list-group-item > a {
+  color: #ff6600 !important;
 }
-
 /* Change text color inside dropdown */
 .dropdown-menu a {
     color: #FFFFFF; /* Black text */

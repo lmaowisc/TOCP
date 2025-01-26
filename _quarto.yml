@@ -10,9 +10,11 @@ website:
       - href: index.qmd
         text: Home
       - href: baseline.qmd
-        text: Baseline
-      - href: wk4.qmd
-        text: First 4 weeks
+        text: Baseline characteristics
+      - href: engage.qmd
+        text: Engaement outcomes
+      - href: appendix.qmd
+        text: Appendix
 
 format:
   html:

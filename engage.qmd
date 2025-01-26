@@ -1,13 +1,15 @@
 ---
-title: "Baseline characteristics"
+title: "Engagement outcomes (Aim 1)"
 format: 
   html:
     toc: true
     toc-depth: 4
+    css: styles.css
 editor: visual
 execute:
   echo: false
   warning: false
+  cache: true
 ---
 
 
@@ -16,6 +18,7 @@ library(tidyverse)
 library(knitr)
 library(kableExtra)
 library(gtsummary)
+library(gt)
 library(labelled)
 library(patchwork)
 library(readxl)
@@ -29,9 +32,7 @@ miss99 <- function(x){
 
 ```
 
-## Engagement in first 4 weeks (Aim 1)
-
-### Presence/absence of a click
+## First 4 weeks (Primary outcome)
 
 ```{r}
 
@@ -156,7 +157,7 @@ df_week <- df |>
   group_by(study_id, trt, week = ceiling(time / 7)) |> 
   summarize(
     n_week = n()
-  )
+  ) |> ungroup()
 
 fig_week <- df_week |>
   left_join(tmp2 |> count(trt)) |>
@@ -239,7 +240,7 @@ df_week4 |>
   add_p() |> 
   bold_p()
 
-
+# df_week4$wk4 |> table()
 
 ```
 
@@ -279,3 +280,148 @@ df_week4 |>
 ```
 
 There is a higher percentage of patients who clicked on the website for all 4 weeks in the intervention arm compared to the control arm. The difference in the proportion of patients who clicked on the website for at least 3 or 2 weeks between the two arms is not as pronounced.
+
+## Over study duration (24 weeks)
+
+The number of pages visited, unique pages visited, unique sessions, and clicks per session over
+the first 4 weeks or 24 weeks by randomization status are summarized in @tbl-engagement_wk24.
+No participant engaged weekly over 24 weeks.
+
+```{r}
+#| label: tbl-engagement_wk24
+#| tbl-cap: Engagement over 24 weeks by randomization status.
+
+
+engage_tbl <- function(df, wk){
+  
+  df |> 
+    filter(
+      day <= wk * 7
+    ) |>
+    group_by(study_id, trt) |> 
+    summarize(
+      # y = (sum(week <= wk) == wk),
+      n_click = n(),
+      n_unique_page = n_distinct(page_num),
+      n_unique_session = n_distinct(domain_id),
+      clicks_per_session = n_click / n_unique_session
+    ) |> 
+    tbl_summary(
+      by = trt,
+      include = c( n_click, n_unique_page, n_unique_session, clicks_per_session),
+      label = list(
+        n_click = "Number pages visited total",
+        n_unique_page = "Number unique pages visited",
+        n_unique_session = "Number unique sessions",
+        clicks_per_session = "Clicks per session"
+      )
+    ) |> 
+    add_p() |> 
+    italicize_levels() 
+  
+}
+
+wk4_tbl <- engage_tbl(df, 4)
+wk24_tbl <- engage_tbl(df, 24)
+
+tbl_merge(list(wk4_tbl, wk24_tbl),
+          tab_spanner = c("**First 4 weeks**", "**24 weeks**"))
+
+
+```
+
+The pages visited most frequently (top 10 in frequency of clicks) are shown in @tbl-page-rank
+(page number codebook).
+
+```{r}
+#| label: tbl-page-rank
+#| tbl-cap: Pages visited most frequently.
+
+
+# Pages visited most frequently (top 10 in frequency of clicks, list number of clicks)
+# Overall	Tailored	Control
+
+# Function to rank pages by frequency of clicks					
+rank_page <- function(df, k = 10) {
+  
+ overall <- df |> 
+    group_by(page_num) |> 
+    summarize(
+      n = n()
+    ) |> 
+    top_n(k, n) |> 
+    arrange(desc(n)) |> 
+   mutate(
+     all = str_c(page_num, " (", n, ")")
+   ) |> select(all)
+  
+ control <- df |> 
+    filter(trt == "Control") |> 
+    group_by(page_num) |> 
+    summarize(
+      n = n()
+    ) |> 
+    top_n(k, n) |> 
+    arrange(desc(n)) |> 
+   mutate(
+     control = str_c(page_num, " (", n, ")")
+   ) |> select(control)
+ 
+ tailored <- df |> 
+    filter(trt == "Tailored") |> 
+    group_by(page_num) |> 
+    summarize(
+      n = n()
+    ) |> 
+    top_n(k, n) |> 
+    arrange(desc(n)) |> 
+   mutate(
+     tailored = str_c(page_num, " (", n, ")")
+   ) |> select(tailored)
+ 
+  cbind(overall, control, tailored)
+ 
+ 
+ }
+  
+
+df24 <- df |> 
+  filter(day <= 24 * 7)
+
+# By total clicks
+tot_click_rank <- rank_page(df24, 10) 
+pat_click_rank <- rank_page(df24 |> distinct(study_id, trt, page_num), 10)
+
+
+colnames(tot_click_rank) <- c("all_clicks", "control_clicks", "tailored_clicks")
+colnames(pat_click_rank) <- c("all_patients", "control_patients", "tailored_patients")
+
+
+
+
+bind_cols(tibble(Rank = 1:10), tot_click_rank, pat_click_rank) |> 
+  gt() |> 
+  cols_label(
+    all_clicks = "Overall",
+    control_clicks = "Control",
+    tailored_clicks = "Tailored",
+    all_patients = "Overall",
+    control_patients = "Control",
+    tailored_patients = "Tailored"
+  ) |> 
+  tab_spanner(
+    label = "By clicks",
+    columns = 2:4
+  )|> 
+  tab_spanner(
+    label = "By patients",
+    columns = 5:7
+  ) |> 
+  tab_footnote(
+  footnote = "Page number (frequency)"
+)
+
+
+
+```
+

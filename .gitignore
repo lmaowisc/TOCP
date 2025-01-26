@@ -5,5 +5,5 @@
 .DS_Store
 .quarto
 /.quarto/
-data/
-tmp/
+/data/
+/tmp/
