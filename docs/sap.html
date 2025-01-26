@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Lu Mao">
-<meta name="dcterms.date" content="2025-01-26">
 
-<title>Tailoring Online Continence Promotion (TOCP) – TOCP</title>
+<title>Statistical Analysis Plan – TOCP</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -91,11 +89,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./sap.html"> 
+    <a class="nav-link active" href="./sap.html" aria-current="page"> 
 <span class="menu-text">Statistical analysis plan</span></a>
   </li>  
   <li class="nav-item">
@@ -126,7 +124,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link active" data-scroll-target="#statistical-analysis">Statistical analysis</a></li>
+  <li><a href="#aim-1-increase-engagement" id="toc-aim-1-increase-engagement" class="nav-link active" data-scroll-target="#aim-1-increase-engagement">Aim 1: Increase Engagement</a>
+  <ul class="collapse">
+  <li><a href="#measures" id="toc-measures" class="nav-link" data-scroll-target="#measures">Measures</a></li>
+  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis">Data Analysis</a></li>
+  </ul></li>
+  <li><a href="#aim-2-increase-adoption-and-maintenance-of-health-behaviors" id="toc-aim-2-increase-adoption-and-maintenance-of-health-behaviors" class="nav-link" data-scroll-target="#aim-2-increase-adoption-and-maintenance-of-health-behaviors">Aim 2: Increase Adoption and Maintenance of Health Behaviors</a>
+  <ul class="collapse">
+  <li><a href="#measures-1" id="toc-measures-1" class="nav-link" data-scroll-target="#measures-1">Measures</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
+  </ul></li>
+  <li><a href="#aim-3-mediation-by-engagement" id="toc-aim-3-mediation-by-engagement" class="nav-link" data-scroll-target="#aim-3-mediation-by-engagement">Aim 3: Mediation by Engagement</a>
+  <ul class="collapse">
+  <li><a href="#measures-2" id="toc-measures-2" class="nav-link" data-scroll-target="#measures-2">Measures</a></li>
+  <li><a href="#analysis-1" id="toc-analysis-1" class="nav-link" data-scroll-target="#analysis-1">Analysis</a></li>
+  </ul></li>
+  <li><a href="#sample-size-and-power-calculation" id="toc-sample-size-and-power-calculation" class="nav-link" data-scroll-target="#sample-size-and-power-calculation">Sample Size and Power Calculation</a></li>
   </ul>
 </nav>
     </div>
@@ -135,26 +148,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Tailoring Online Continence Promotion (TOCP)</h1>
+<h1 class="title">Statistical Analysis Plan</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Lu Mao </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">January 26, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -164,8 +165,155 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="statistical-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="statistical-analysis">Statistical analysis</h2>
+<p>This study will test whether tailoring can increase engagement with the online <strong>Mind Over Matter: Healthy Bowels, Healthy Bladder (MOM)</strong> program. We hypothesize that incorporating tailoring will double the proportion of users who engage with the program (defined as at least four program sessions in the first 4 weeks) compared to an active control group (online MOM with weekly reminder emails and no tailoring).</p>
+<section id="aim-1-increase-engagement" class="level2">
+<h2 class="anchored" data-anchor-id="aim-1-increase-engagement">Aim 1: Increase Engagement</h2>
+<p><strong>Hypothesis</strong>: Incorporating tailoring into online MOM will double the proportion of participants who engage with the program compared to the active control.</p>
+<p>We will use descriptive statistics to characterize how engagement metrics differ between the treatment and control groups. Machine learning–based clustering models will identify participant use patterns to inform mediation analyses in Aim 3 and subsequent algorithm programming and testing.</p>
+<section id="measures" class="level3">
+<h3 class="anchored" data-anchor-id="measures">Measures</h3>
+<ul>
+<li><strong>Primary Outcome</strong>: Engagement with the program, defined as participation in at least one session per week during the first 4 weeks.</li>
+<li><strong>Additional Engagement Metrics</strong>:
+<ul>
+<li>Number of sessions accessed weekly<br>
+</li>
+<li>Minutes spent on the program weekly<br>
+</li>
+<li>Average intervals between sessions<br>
+</li>
+<li>Specific components accessed<br>
+</li>
+<li>Use patterns for specific features (e.g., tracking and reminders)</li>
+</ul></li>
+</ul>
+<p>These metrics will be derived from user device data monthly.</p>
+</section>
+<section id="data-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="data-analysis">Data Analysis</h3>
+<ul>
+<li><strong>Descriptive Statistics</strong>: Summarize demographic and clinical characteristics of participants in each group.<br>
+</li>
+<li><strong>Comparisons</strong>:
+<ul>
+<li>Compare proportions of participants who achieve engagement (primary outcome) using binomial chi-square with alpha=0.05.<br>
+</li>
+<li>Explore whether variables (e.g., race, educational attainment, baseline incontinence symptoms) moderate the effects of tailoring on engagement using chi-square analyses and interaction effects in Cox Regression.<br>
+</li>
+<li>Compare number and intervals between sessions, pages viewed, minutes spent per week (weeks 1–24), and use of features (e.g., tracking, reminders) between groups.</li>
+</ul></li>
+<li><strong>Clustering Analyses</strong>:
+<ul>
+<li>K-means and hierarchical clustering will be used to categorize participant use patterns.<br>
+</li>
+<li>Clusters will group participants by:
+<ol type="1">
+<li><strong>Engagement types</strong> (based on program use metrics)<br>
+</li>
+<li><strong>Behavior types</strong> (based on self-reported behavior data from Aim 2)<br>
+</li>
+<li><strong>Engagement-behavior types</strong> (combining program use metrics and self-reported behavior data)</li>
+</ol></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="aim-2-increase-adoption-and-maintenance-of-health-behaviors" class="level2">
+<h2 class="anchored" data-anchor-id="aim-2-increase-adoption-and-maintenance-of-health-behaviors">Aim 2: Increase Adoption and Maintenance of Health Behaviors</h2>
+<p>We will compare rates of uptake and continuation of pelvic floor muscle exercises (PFME) and other health behaviors (fiber intake, fluid optimization, voiding patterns) between the two groups, focusing on how tailoring might influence these behaviors.</p>
+<section id="measures-1" class="level3">
+<h3 class="anchored" data-anchor-id="measures-1">Measures</h3>
+<ul>
+<li><strong>Primary Outcome</strong>: Adoption of consistent pelvic floor muscle exercises at 4 weeks, defined as self-reported performance of exercises “often or always” at 4 weeks among those who reported inconsistent performance at baseline.<br>
+</li>
+<li><strong>Secondary Outcomes</strong>:
+<ul>
+<li>Maintenance of exercises (consistent performance at two consecutive time points among 4, 12, and 24 weeks)<br>
+</li>
+<li>Adoption and maintenance of other health behaviors:
+<ul>
+<li>Daily fiber intake ≥21g<br>
+</li>
+<li>Caffeine intake &lt;205 mg/day<br>
+</li>
+<li>Daily fluid intake 60–100 ounces<br>
+</li>
+<li>6–9 voids per day<br>
+</li>
+</ul></li>
+<li>Weight loss of at least 2 kg at 12 or 24 weeks for participants with BMI &gt;25 kg/m^2 at baseline</li>
+</ul></li>
+</ul>
+<p>These behaviors will be assessed via electronic surveys at baseline, 4, 12, and 24 weeks.</p>
+</section>
+<section id="analysis" class="level3">
+<h3 class="anchored" data-anchor-id="analysis">Analysis</h3>
+<ul>
+<li><strong>Descriptive Statistics</strong>: Summarize demographic and clinical characteristics of both groups.<br>
+</li>
+<li><strong>Comparisons</strong>:
+<ul>
+<li>Compare the proportion who adopt consistent PFME between baseline and 4 weeks using binomial chi-square (alpha=0.05).<br>
+</li>
+<li>Explore whether individual differences (e.g., race, educational attainment, baseline symptoms) moderate the effects of tailoring on PFME adoption using chi-square and Cox Regression.<br>
+</li>
+<li>For secondary outcomes, similar methods will be used to compare adoption/maintenance of other behaviors.</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="aim-3-mediation-by-engagement" class="level2">
+<h2 class="anchored" data-anchor-id="aim-3-mediation-by-engagement">Aim 3: Mediation by Engagement</h2>
+<p>We will investigate whether high program engagement mediates the effect of tailoring on adoption of pelvic floor muscle exercises at 12 weeks, while also exploring other potential mediators such as self-efficacy, symptoms, and perceived barriers.</p>
+<section id="measures-2" class="level3">
+<h3 class="anchored" data-anchor-id="measures-2">Measures</h3>
+<ul>
+<li><strong>Primary Outcome</strong>: Adoption of consistent PFME at 12 weeks, defined as performing exercises “often or always” at 12 weeks among those who reported inconsistent performance at baseline.<br>
+</li>
+<li><strong>Primary Independent Variable</strong>: Allocation to treatment (tailoring) or control.<br>
+</li>
+<li><strong>Potential Mediators</strong>:
+<ul>
+<li><strong>Program Engagement</strong>: High engagement during weeks 0–4 (defined in Aim 1).<br>
+</li>
+<li><strong>Self-Efficacy</strong>: Change in self-efficacy for continence-related behaviors (baseline to 4 weeks).<br>
+</li>
+<li><strong>Symptoms and Quality of Life</strong>: Change in urinary incontinence, bowel incontinence, condition-specific and generic quality of life measures (baseline to 4 weeks).<br>
+</li>
+<li><strong>Symptom Improvement and Satisfaction</strong>: Validated questionnaire assessing global satisfaction and approximate symptom improvement.<br>
+</li>
+<li><strong>Perceived Barriers to Care</strong>: Changes in validated barriers questionnaires (baseline to 4 weeks).</li>
+</ul></li>
+</ul>
+</section>
+<section id="analysis-1" class="level3">
+<h3 class="anchored" data-anchor-id="analysis-1">Analysis</h3>
+<ul>
+<li><strong>Mediation Analyses</strong>:
+<ul>
+<li>Regression modeling for behavior change (B) against tailoring (T) and mediators (M).<br>
+</li>
+<li>Estimate natural direct and indirect effects for each mediator.<br>
+</li>
+</ul></li>
+<li><strong>Additional Comparisons</strong>:
+<ul>
+<li>Summarize changes in incontinence severity, impact, barriers, program satisfaction, and global perception of improvement.</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="sample-size-and-power-calculation" class="level2">
+<h2 class="anchored" data-anchor-id="sample-size-and-power-calculation">Sample Size and Power Calculation</h2>
+<p>The primary outcome for power calculation is program engagement in Aim 1. We hypothesize that tailoring will double engagement rates:</p>
+<ul>
+<li>Control group engagement estimate: 15%<br>
+</li>
+<li>Treatment group engagement estimate: 30%<br>
+</li>
+<li>90% power, alpha=0.05</li>
+</ul>
+<p>This requires 174 participants per arm. Allowing for 20% attrition, we will recruit 218 participants per arm.</p>
 
 
 </section>
