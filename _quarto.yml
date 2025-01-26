@@ -12,11 +12,11 @@ website:
       - href: baseline.qmd
         text: Baseline characteristics
       - href: engage.qmd
-        text: Engaement outcomes
+        text: Engagement outcomes
       - href: appendix.qmd
         text: Appendix
       - href: sap.qmd
-        text: Statistical analysis plan
+        text: SAP
 
 format:
   html:

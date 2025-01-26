@@ -1,5 +1,5 @@
 ---
-title: "Statistical Analysis Plan"
+title: "Statistical analysis plan"
 format: html
 editor: visual
 ---
