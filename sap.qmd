@@ -1,10 +1,8 @@
-
 ---
 title: "Statistical Analysis Plan"
 format: html
 editor: visual
 ---
-
 
 This study will test whether tailoring can increase engagement with the online **Mind Over Matter: Healthy Bowels, Healthy Bladder (MOM)** program. We hypothesize that incorporating tailoring will double the proportion of users who engage with the program (defined as at least four program sessions in the first 4 weeks) compared to an active control group (online MOM with weekly reminder emails and no tailoring).
 
@@ -16,31 +14,29 @@ We will use descriptive statistics to characterize how engagement metrics differ
 
 ### Measures
 
-- **Primary Outcome**: Engagement with the program, defined as participation in at least one session per week during the first 4 weeks.
-- **Additional Engagement Metrics**: 
-  - Number of sessions accessed weekly  
-  - Minutes spent on the program weekly  
-  - Average intervals between sessions  
-  - Specific components accessed  
-  - Use patterns for specific features (e.g., tracking and reminders)  
+-   **Primary Outcome**: Engagement with the program, defined as participation in at least one session per week during the first 4 weeks.
+-   **Additional Engagement Metrics**:
+    -   Number of sessions accessed weekly\
+    -   Minutes spent on the program weekly\
+    -   Average intervals between sessions\
+    -   Specific components accessed\
+    -   Use patterns for specific features (e.g., tracking and reminders)
 
 These metrics will be derived from user device data monthly.
 
 ### Data Analysis
 
-- **Descriptive Statistics**: Summarize demographic and clinical characteristics of participants in each group.  
-- **Comparisons**:  
-  - Compare proportions of participants who achieve engagement (primary outcome) using binomial chi-square with alpha=0.05.  
-  - Explore whether variables (e.g., race, educational attainment, baseline incontinence symptoms) moderate the effects of tailoring on engagement using chi-square analyses and interaction effects in Cox Regression.  
-  - Compare number and intervals between sessions, pages viewed, minutes spent per week (weeks 1–24), and use of features (e.g., tracking, reminders) between groups.
-
-- **Clustering Analyses**:  
-  - K-means and hierarchical clustering will be used to categorize participant use patterns.  
-  - Clusters will group participants by:
-    1. **Engagement types** (based on program use metrics)  
-    2. **Behavior types** (based on self-reported behavior data from Aim 2)  
-    3. **Engagement-behavior types** (combining program use metrics and self-reported behavior data)
-
+-   **Descriptive Statistics**: Summarize demographic and clinical characteristics of participants in each group.\
+-   **Comparisons**:
+    -   Compare proportions of participants who achieve engagement (primary outcome) using binomial chi-square with alpha=0.05.\
+    -   Explore whether variables (e.g., race, educational attainment, baseline incontinence symptoms) moderate the effects of tailoring on engagement using chi-square analyses and interaction effects in Cox Regression.\
+    -   Compare number and intervals between sessions, pages viewed, minutes spent per week (weeks 1–24), and use of features (e.g., tracking, reminders) between groups.
+-   **Clustering Analyses**:
+    -   K-means and hierarchical clustering will be used to categorize participant use patterns.\
+    -   Clusters will group participants by:
+        1.  **Engagement types** (based on program use metrics)\
+        2.  **Behavior types** (based on self-reported behavior data from Aim 2)\
+        3.  **Engagement-behavior types** (combining program use metrics and self-reported behavior data)
 
 ## Aim 2: Increase Adoption and Maintenance of Health Behaviors
 
@@ -48,26 +44,25 @@ We will compare rates of uptake and continuation of pelvic floor muscle exercise
 
 ### Measures
 
-- **Primary Outcome**: Adoption of consistent pelvic floor muscle exercises at 4 weeks, defined as self-reported performance of exercises “often or always” at 4 weeks among those who reported inconsistent performance at baseline.  
-- **Secondary Outcomes**:
-  - Maintenance of exercises (consistent performance at two consecutive time points among 4, 12, and 24 weeks)  
-  - Adoption and maintenance of other health behaviors:  
-    - Daily fiber intake ≥21g  
-    - Caffeine intake <205 mg/day  
-    - Daily fluid intake 60–100 ounces  
-    - 6–9 voids per day  
-  - Weight loss of at least 2 kg at 12 or 24 weeks for participants with BMI >25 kg/m^2 at baseline
+-   **Primary Outcome**: Adoption of consistent pelvic floor muscle exercises at 4 weeks, defined as self-reported performance of exercises “often or always” at 4 weeks among those who reported inconsistent performance at baseline.\
+-   **Secondary Outcomes**:
+    -   Maintenance of exercises (consistent performance at two consecutive time points among 4, 12, and 24 weeks)\
+    -   Adoption and maintenance of other health behaviors:
+        -   Daily fiber intake ≥21g\
+        -   Caffeine intake \<205 mg/day\
+        -   Daily fluid intake 60–100 ounces\
+        -   6–9 voids per day\
+    -   Weight loss of at least 2 kg at 12 or 24 weeks for participants with BMI \>25 kg/m\^2 at baseline
 
 These behaviors will be assessed via electronic surveys at baseline, 4, 12, and 24 weeks.
 
 ### Analysis
 
-- **Descriptive Statistics**: Summarize demographic and clinical characteristics of both groups.  
-- **Comparisons**:  
-  - Compare the proportion who adopt consistent PFME between baseline and 4 weeks using binomial chi-square (alpha=0.05).  
-  - Explore whether individual differences (e.g., race, educational attainment, baseline symptoms) moderate the effects of tailoring on PFME adoption using chi-square and Cox Regression.  
-  - For secondary outcomes, similar methods will be used to compare adoption/maintenance of other behaviors.
-
+-   **Descriptive Statistics**: Summarize demographic and clinical characteristics of both groups.\
+-   **Comparisons**:
+    -   Compare the proportion who adopt consistent PFME between baseline and 4 weeks using binomial chi-square (alpha=0.05).\
+    -   Explore whether individual differences (e.g., race, educational attainment, baseline symptoms) moderate the effects of tailoring on PFME adoption using chi-square and Cox Regression.\
+    -   For secondary outcomes, similar methods will be used to compare adoption/maintenance of other behaviors.
 
 ## Aim 3: Mediation by Engagement
 
@@ -75,30 +70,29 @@ We will investigate whether high program engagement mediates the effect of tailo
 
 ### Measures
 
-- **Primary Outcome**: Adoption of consistent PFME at 12 weeks, defined as performing exercises “often or always” at 12 weeks among those who reported inconsistent performance at baseline.  
-- **Primary Independent Variable**: Allocation to treatment (tailoring) or control.  
-- **Potential Mediators**:  
-  - **Program Engagement**: High engagement during weeks 0–4 (defined in Aim 1).  
-  - **Self-Efficacy**: Change in self-efficacy for continence-related behaviors (baseline to 4 weeks).  
-  - **Symptoms and Quality of Life**: Change in urinary incontinence, bowel incontinence, condition-specific and generic quality of life measures (baseline to 4 weeks).  
-  - **Symptom Improvement and Satisfaction**: Validated questionnaire assessing global satisfaction and approximate symptom improvement.  
-  - **Perceived Barriers to Care**: Changes in validated barriers questionnaires (baseline to 4 weeks).
+-   **Primary Outcome**: Adoption of consistent PFME at 12 weeks, defined as performing exercises “often or always” at 12 weeks among those who reported inconsistent performance at baseline.\
+-   **Primary Independent Variable**: Allocation to treatment (tailoring) or control.\
+-   **Potential Mediators**:
+    -   **Program Engagement**: High engagement during weeks 0–4 (defined in Aim 1).\
+    -   **Self-Efficacy**: Change in self-efficacy for continence-related behaviors (baseline to 4 weeks).\
+    -   **Symptoms and Quality of Life**: Change in urinary incontinence, bowel incontinence, condition-specific and generic quality of life measures (baseline to 4 weeks).\
+    -   **Symptom Improvement and Satisfaction**: Validated questionnaire assessing global satisfaction and approximate symptom improvement.\
+    -   **Perceived Barriers to Care**: Changes in validated barriers questionnaires (baseline to 4 weeks).
 
 ### Analysis
 
-- **Mediation Analyses**:  
-  - Regression modeling for behavior change (B) against tailoring (T) and mediators (M).  
-  - Estimate natural direct and indirect effects for each mediator.  
-- **Additional Comparisons**:  
-  - Summarize changes in incontinence severity, impact, barriers, program satisfaction, and global perception of improvement.
-
+-   **Mediation Analyses**:
+    -   Regression modeling for behavior change (B) against tailoring (T) and mediators (M).\
+    -   Estimate natural direct and indirect effects for each mediator.\
+-   **Additional Comparisons**:
+    -   Summarize changes in incontinence severity, impact, barriers, program satisfaction, and global perception of improvement.
 
 ## Sample Size and Power Calculation
 
 The primary outcome for power calculation is program engagement in Aim 1. We hypothesize that tailoring will double engagement rates:
 
-- Control group engagement estimate: 15%  
-- Treatment group engagement estimate: 30%  
-- 90% power, alpha=0.05  
+-   Control group engagement estimate: 15%\
+-   Treatment group engagement estimate: 30%\
+-   90% power, alpha=0.05
 
 This requires 174 participants per arm. Allowing for 20% attrition, we will recruit 218 participants per arm.

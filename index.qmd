@@ -16,6 +16,23 @@ execute:
 #| file: R/basic_functions_pkgs.R
 ```
 
-## Statistical analysis
+This site posts statistical analysis results for the Tailored Online Continence Program (TOCP) study. The TOCP study is  a research-based digital intervention aimed at helping women adopt and maintain healthy behaviors to improve bladder and bowel control.
+
+
+
+<!-- The Tailored Online Continence Program (TOCP) is a research-based digital intervention aimed at helping women adopt and maintain healthy behaviors to improve bladder and bowel control. Building upon the **Mind Over Matter: Healthy Bowels, Healthy Bladder (MOM)** framework, TOCP personalizes content and reminders to encourage regular pelvic floor muscle exercises, optimize fluid intake, increase fiber consumption, and promote healthy voiding habits. -->
+
+<!-- Through ongoing research and user feedback, TOCP seeks to enhance engagement and effectiveness by tailoring the program to individual needs. By exploring how personalized messaging and strategies can support these behaviors, we aim to empower participants with tools and knowledge for long-term continence and improved quality of life. -->
+
+
+
+
+
+
+
+
+
+
+
 
 

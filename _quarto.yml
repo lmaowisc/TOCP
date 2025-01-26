@@ -9,14 +9,14 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: sap.qmd
-        text: Statistical analysis plan
       - href: baseline.qmd
         text: Baseline characteristics
       - href: engage.qmd
         text: Engaement outcomes
       - href: appendix.qmd
         text: Appendix
+      - href: sap.qmd
+        text: Statistical analysis plan
 
 format:
   html:

@@ -131,5 +131,12 @@
     "title": "Statistical Analysis Plan",
     "section": "Sample Size and Power Calculation",
     "text": "Sample Size and Power Calculation\nThe primary outcome for power calculation is program engagement in Aim 1. We hypothesize that tailoring will double engagement rates:\n\nControl group engagement estimate: 15%\n\nTreatment group engagement estimate: 30%\n\n90% power, alpha=0.05\n\nThis requires 174 participants per arm. Allowing for 20% attrition, we will recruit 218 participants per arm."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tailoring Online Continence Promotion (TOCP)",
+    "section": "",
+    "text": "This site posts statistical analysis results for the Tailored Online Continence Program (TOCP) study. The TOCP study is a research-based digital intervention aimed at helping women adopt and maintain healthy behaviors to improve bladder and bowel control."
   }
 ]
