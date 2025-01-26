@@ -1,0 +1,281 @@
+---
+title: "Baseline characteristics"
+format: 
+  html:
+    toc: true
+    toc-depth: 4
+editor: visual
+execute:
+  echo: false
+  warning: false
+---
+
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gtsummary)
+library(labelled)
+library(patchwork)
+library(readxl)
+
+refmt <- function(var, fmt){
+  plyr::revalue(as.factor(var), fmt)
+}
+miss99 <- function(x){
+  as.numeric(if_else(x == 99, NA, x))
+}
+
+```
+
+## Engagement in first 4 weeks (Aim 1)
+
+### Presence/absence of a click
+
+```{r}
+
+tmp2 <- readRDS("data/tmp2.rds")
+orb <- readRDS("data/orb.rds")
+
+# left join tmp2 with orb
+df <- tmp2 |> 
+  left_join(orb, by = "study_id") |> 
+  select(
+    study_id, trt, baseline_survey_timestamp, domain_id, page_num, click_time  
+  ) |>
+  mutate(
+    study_id = factor(study_id),
+    time = as.numeric(difftime(click_time, baseline_survey_timestamp, units = "days")),
+    time = if_else(time <=0, 0.01, time),
+    day = ceiling(time)
+  ) |> 
+    arrange(study_id, time)
+
+# df |> View()
+
+# patients with no click?
+id_no_click <- df |> 
+  filter(is.na(time)) |> 
+  pull(study_id)
+
+```
+
+For each day after randomization (`baseline_survey_timestamp`), we determine if a patient clicked on the website. Their click patterns over time by randomization status are shown in @fig-engagement-pat.
+
+```{r}
+#| label: fig-engagement-pat
+#| fig-cap: Patient-level engagement over time by randomization status.
+#| fig-width: 8
+#| fig-height: 12
+
+
+df_day <- df |> 
+  group_by(study_id, trt, day) |> 
+  summarize(
+    n_day = n()
+  ) 
+
+df_day_max <- df_day |> group_by(study_id, trt) |> summarize(daymax = min(max(day), 12 * 7))
+
+# View(df_day_max)
+
+# plot patient-level engagement over time
+# with a dot indicating a click, and a line connecting the dots
+# size of dot is proportional to the number of clicks on that day
+df_day_max |> 
+  ggplot(aes(y = study_id)) +
+    geom_linerange(aes(y = reorder(study_id, daymax, decreasing = TRUE), xmin = 0, xmax = daymax)) +
+  geom_point(data = df_day, aes(x = day)) +
+  geom_vline(xintercept = 0, linewidth = 1) +
+  geom_vline(xintercept = 4 * 7, linewidth = 1, linetype = 2, color = "gray20") +
+  facet_wrap(~trt, scales = "free_y") +
+  # scale_size_continuous(range = c(1, 5)) +
+  scale_x_continuous(limits = c(0, 7 * 12), 
+                     breaks = seq(0, 7 * 12, 7), 
+                     expand = expansion(c(0, 0.05))) +
+  scale_y_discrete(NULL) +
+  labs(
+    x = "Days since baseline",
+    y = "Patient",
+    caption = "A dot represents at least one click on that day"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+# ?reorder
+
+```
+
+Proportion of patients with at least one click per day/week over time by randomization status is shown in @fig-engagement-trt.
+
+```{r}
+#| label: fig-engagement-trt
+#| fig-cap: Proportion of patients with at least one click over time by randomization status.
+#| fig-width: 8
+#| fig-height: 8
+
+
+# plot proportion of daily engagement by randomized arm
+# using bar plots
+
+fig_day <- df_day |> 
+  left_join(tmp2 |> count(trt)) |>
+  group_by(trt, n, day) |> 
+  summarize(
+    num_day = sum(n_day > 0)
+  ) |> 
+  mutate(
+    prop = num_day / n
+  ) |> 
+  ggplot(aes(x = day, y = prop, fill = trt)) +
+  geom_col(position = "dodge") + 
+  scale_x_continuous(limits = c(0, 4 * 7 + .5), breaks = seq(0, 7 * 4, 7)) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(
+    x = "Days since baseline",
+    y = "Proportion engaged",
+    fill = "Randomization status"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+
+# plot proportion of weakly engagement by randomized arm
+# using bar plots
+
+df_week <- df |> 
+  group_by(study_id, trt, week = ceiling(time / 7)) |> 
+  summarize(
+    n_week = n()
+  )
+
+fig_week <- df_week |>
+  left_join(tmp2 |> count(trt)) |>
+  group_by(trt, n, week) |> 
+  summarize(
+    num_week = sum(n_week > 0)
+  ) |> 
+  mutate(
+    prop = num_week / n
+  ) |> 
+  ggplot(aes(x = week, y = prop, fill = trt)) +
+  geom_col(position = "dodge") + 
+  scale_x_continuous(limits = c(0.5, 4.5), breaks = seq(1, 4, 1)) +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(
+    x = "Weeks since baseline",
+    y = "Proportion engaged",
+    fill = "Randomization status"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    panel.grid.minor.x = element_blank(),
+    panel.grid.minor.y = element_blank()
+  )
+
+# stack the two figures - combine legends
+fig_day / fig_week + 
+  plot_layout(guides = "collect") &
+  theme(
+    legend.position = "top",
+    legend.title = element_blank()
+  )
+```
+
+@fig-engagement-pat and @fig-engagement-trt show that most patients clicked on the website within the first week after randomization. The proportion of patients who clicked on the website decreased over time. The proportion of patients who clicked on the website was simiar between the two arms.
+
+In the first 4 weeks following randomization, the number and proportion of patients who clicked on the website at least once for all 4 weeks (primary endpoint) and at least 3 or 2 weeks are summarized in @tbl-engagement_wk4 and visualized in @fig-engagement_wk4.
+
+```{r}
+#| label: tbl-engagement_wk4
+#| tbl-cap: Engagement in the first 4 weeks by randomization status.
+
+# tmp2 |> 
+#   select(study_id)
+
+df_week4 <- df_week |> 
+  filter(week <= 4) |> 
+  group_by(study_id, trt) |> 
+  summarize(
+    n = n(),
+    wk4 = (n == 4),
+    wk3 = (n >= 3),
+    wk2 = (n >= 2),
+    .groups = "drop"
+  ) |> 
+    right_join(
+      tmp2 |> 
+        select(study_id, trt) |> 
+        mutate(
+          study_id = factor(study_id)
+        )
+    ) |> 
+  mutate(
+    across(wk4:wk2, ~ replace_na(., FALSE))
+  )
+
+
+var_label(df_week4) <- list(
+  wk4 = "All 4 weeks (Primary endpoint)",
+  wk3 = "At least 3 weeks",
+  wk2 = "At least 2 weeks"
+)
+
+df_week4 |> 
+  tbl_summary(
+    by = trt,
+    include = c(wk4, wk3, wk2)
+  ) |>
+  add_p() |> 
+  bold_p()
+
+
+
+```
+
+```{r}
+#| label: fig-engagement_wk4
+#| fig-cap: Proportion of patients engaged in the first 4 weeks by randomization status.
+#| fig-width: 8
+#| fig-height: 4
+
+
+df_week4 |> 
+  pivot_longer(
+    wk4:wk2,
+    values_to = "y",
+    names_to = "endpoint"
+  ) |> 
+  group_by(trt, endpoint) |> 
+  mutate(
+    y = mean(y),
+    endpoint = fct(endpoint, c("wk4", "wk3", "wk2"))
+  ) |> 
+  ggplot(aes(x = endpoint, y = y, fill = trt)) +
+  # barplot of proportion of TRUE for each endpoint
+    geom_col(position = "dodge") +
+    scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+    scale_x_discrete(labels = c("All 4 weeks (Primary endpoint)", "At least 3 weeks", "At least 2 weeks")) +
+    labs(
+      x = NULL,
+      y = "Proportion engaged",
+      fill = NULL
+    ) +
+    theme_minimal() +
+    theme(
+      legend.position = "top"
+    )
+
+```
+
+There is a higher percentage of patients who clicked on the website for all 4 weeks in the intervention arm compared to the control arm. The difference in the proportion of patients who clicked on the website for at least 3 or 2 weeks between the two arms is not as pronounced.

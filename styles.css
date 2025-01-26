@@ -11,6 +11,12 @@ a {text-decoration: none; }
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
 }
 
+
+/* Optional: Change color on hover */
+.toc a:hover {
+    color: #A9D794; /* Replace with hover color */
+}
+
 /* Change text color inside dropdown */
 .dropdown-menu a {
     color: #FFFFFF; /* Black text */

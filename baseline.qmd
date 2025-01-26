@@ -10,11 +10,23 @@ execute:
   warning: false
 ---
 
-
 ```{r}
-#| file: R/basic_functions_pkgs.R
-```
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gtsummary)
+library(labelled)
+library(patchwork)
+library(readxl)
 
+refmt <- function(var, fmt){
+  plyr::revalue(as.factor(var), fmt)
+}
+miss99 <- function(x){
+  as.numeric(if_else(x == 99, NA, x))
+}
+
+```
 
 ```{r}
 # read in data from data/ folder
@@ -39,6 +51,8 @@ orb <- read_excel("data/data file orbita final.xlsx", sheet = 1,
                   col_names= c("study_id", NA, NA, "domain_id", "page_num", "click_time"),
                   skip = 1) |> 
   select(study_id, domain_id, page_num, click_time)
+
+saveRDS(orb, "data/orb.rds")
 
 # orb |> 
 #   count(study_id)
@@ -307,6 +321,9 @@ var_label(tmp2) <- list(
   relevantsurghx_bl___5 = "Other surgery for urinary incontinence",
   relevantsurghx_bl___6 = "Surgery for bowel incontinence"
 )
+
+
+saveRDS(tmp2, "data/tmp2.rds")
 
 
 # demo <- tmp2 |> 
