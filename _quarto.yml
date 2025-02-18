@@ -13,6 +13,8 @@ website:
         text: Baseline characteristics
       - href: engage.qmd
         text: Engagement outcomes
+      - href: behavior.qmd
+        text: Adoption & behavior
       - href: appendix.qmd
         text: Appendix
       - href: sap.qmd

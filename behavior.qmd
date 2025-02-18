@@ -1,0 +1,83 @@
+---
+title: "Adoption and Maintenance of Behavior (Aim 2)"
+format: 
+  html:
+    toc: true
+    toc-depth: 4
+    css: styles.css
+editor: visual
+execute:
+  echo: false
+  warning: false
+  cache: true
+---
+
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gtsummary)
+library(gt)
+library(labelled)
+library(patchwork)
+library(readxl)
+
+refmt <- function(var, fmt){
+  plyr::revalue(as.factor(var), fmt)
+}
+miss99 <- function(x){
+  as.numeric(if_else(x == 99, NA, x))
+}
+
+```
+
+```{r}
+tmp1m <- read_excel("data/Merged_Baseline_and_1_month_Data_4_26_24_note_as_of_4_26_393_completed_1mo_all_393_in_here_v2.xlsx", sheet = 1) |> 
+  mutate(
+    study_id = as.character(study_id)
+  )
+tmp3mT <- read_csv("data/ArmT3m.csv")
+tmp3mC <- read_csv("data/ArmC3m.csv")
+tmp6mT <- read_csv("data/ArmT6m.csv")
+tmp6mC <- read_csv("data/ArmC6m.csv")
+
+
+# <!-- psq_1mo (program satisfaction) -->
+# <!-- # 1 Completely satis�ed -->
+# <!-- # 2 Somewhat satis�ed -->
+# <!-- # 3 Not at all satis�ed -->
+# <!-- # 99 Choose not to answer -->
+
+psq_fmt <- c(
+  "1" = "Completely satisfied",
+  "2" = "Somewhat satisfied",
+  "3" = "Not at all satisfied",
+  "99" = NA
+)
+
+gpi_fmt <- c(
+  "1" = "Much better",
+  "2" = "Better",
+  "3" = "About the same",
+  "4" = "Worse",
+  "5" = "Much worse",
+  "99" = NA
+)  
+
+recwotg_fmt <- c(
+  "1" = "Yes",
+  "2" = "No",
+  "99" = NA
+)
+
+armfmt <- c("1" = "Control", "2" = "Tailored")
+  
+df_beh <- tmp1m |> 
+  left_join(tmp3mT, by = "study_id") |>
+  left_join(tmp3mC, by = "study_id") |>
+  left_join(tmp6mT, by = "study_id") |>
+  left_join(tmp6mC, by = "study_id") 
+
+```
+

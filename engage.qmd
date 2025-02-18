@@ -283,6 +283,7 @@ There is a higher percentage of patients who clicked on the website for all 4 we
 
 ## Over study duration (24 weeks)
 
+### Engagement over 24 weeks
 The number of pages visited, unique pages visited, unique sessions, and clicks per session over
 the first 4 weeks or 24 weeks by randomization status are summarized in @tbl-engagement_wk24.
 No participant engaged weekly over 24 weeks.
@@ -329,6 +330,8 @@ tbl_merge(list(wk4_tbl, wk24_tbl),
 
 
 ```
+
+### Pages visited
 
 The pages visited most frequently (top 10 in frequency of clicks) are shown in @tbl-page-rank
 (page number [codebook](https://lmaowisc.github.io/TOCP/page_number_code.xlsx)).
@@ -422,6 +425,198 @@ bind_cols(tibble(Rank = 1:10), tot_click_rank, pat_click_rank) |>
 )
 
 
+
+```
+
+### Experience with program
+
+The following are summarized at 1, 3, and 6 months after randomization:
+
+- **Program satisfaction**: How satisfied are you with your progress in the WOTG program?
+- **Overall symptoms**: Since starting the WOTG program, overall, do you feel that you are...
+- **Estimated % improvement**: Since starting the WOTG program, please estimate how much better you are on a scale from 0% (no better) to 100% (completely better).
+- **Recommend WOTG**: Would you recommend the WOTG program to a friend or family member?
+
+
+<!-- Program satisfaction -->
+
+<!-- psq_1mo (program satisfaction) -->
+<!-- # 1 Completely satis�ed -->
+<!-- # 2 Somewhat satis�ed -->
+<!-- # 3 Not at all satis�ed -->
+<!-- # 99 Choose not to answer -->
+
+<!-- gpi_1mo (overall symptoms) -->
+<!-- Since starting the Women on the Go -->
+<!-- program, overall, do you feel that you are: -->
+<!-- radio, Required -->
+<!-- 1 Much Better -->
+<!-- 2 Better -->
+<!-- 3 About the same -->
+<!-- 4 Worse -->
+<!-- 5 Much worse -->
+<!-- 99 Choose not to answer -->
+
+<!-- epi_1mo (estimated percent improvement – this is a continuous variable)  -->
+<!-- Since starting the Women on the Go -->
+<!-- program, please estimate how much better -->
+<!-- you are on a scale from 0% (no better) to -->
+<!-- 100% (completely better). -->
+<!-- slider (number, Min: 0, Max: 100) -->
+<!-- Slider labels: 0%, 50%, 100% -->
+<!-- Custom alignment: RH -->
+<!-- Would you recommend Women on the Go to -->
+<!-- a friend or family member? -->
+<!-- radio, Required -->
+<!-- 1 Yes -->
+<!-- 2 No -->
+<!-- 99 Choose not to answer -->
+<!-- recwotg_1mo (recommend the program to a friend) -->
+
+```{r}
+#| label: tbl-exp
+#| tbl-cap: Experience with program by randomization status.
+
+tmp1m <- read_excel("data/Merged_Baseline_and_1_month_Data_4_26_24_note_as_of_4_26_393_completed_1mo_all_393_in_here_v2.xlsx", sheet = 1) |> 
+  mutate(
+    study_id = as.character(study_id)
+  )
+tmp3mT <- read_csv("data/ArmT3m.csv")
+tmp3mC <- read_csv("data/ArmC3m.csv")
+tmp6mT <- read_csv("data/ArmT6m.csv")
+tmp6mC <- read_csv("data/ArmC6m.csv")
+
+
+# <!-- psq_1mo (program satisfaction) -->
+# <!-- # 1 Completely satis�ed -->
+# <!-- # 2 Somewhat satis�ed -->
+# <!-- # 3 Not at all satis�ed -->
+# <!-- # 99 Choose not to answer -->
+
+psq_fmt <- c(
+  "1" = "Completely satisfied",
+  "2" = "Somewhat satisfied",
+  "3" = "Not at all satisfied",
+  "99" = NA
+)
+
+gpi_fmt <- c(
+  "1" = "Much better",
+  "2" = "Better",
+  "3" = "About the same",
+  "4" = "Worse",
+  "5" = "Much worse",
+  "99" = NA
+)  
+
+recwotg_fmt <- c(
+  "1" = "Yes",
+  "2" = "No",
+  "99" = NA
+)
+
+armfmt <- c("1" = "Control", "2" = "Tailored")
+  
+df_exp <- tmp1m |> 
+  left_join(tmp3mT, by = "study_id") |>
+  left_join(tmp3mC, by = "study_id") |>
+  left_join(tmp6mT, by = "study_id") |>
+  left_join(tmp6mC, by = "study_id") |>
+  select(study_id, rand_round_2, psq_1mo, gpi_1mo, epi_1mo, recwotg_1mo,
+         psq_3mo, psq_3mo_t, psq_6mo, psq_6mo_t,
+         gpi_3mo, gpi_3mo_t, gpi_6mo, gpi_6mo_t,
+         epi_3mo, epi_3mo_t, epi_6mo, epi_6mo_t,
+         recwotg_3mo, recwotg_3mo_t, recwotg2fam_6mo, recwotg2fam_6mo_t) |> 
+  mutate(
+    psq_3mo = coalesce(psq_3mo, psq_3mo_t),
+    psq_6mo = coalesce(psq_6mo, psq_6mo_t),
+    gpi_3mo = coalesce(gpi_3mo, gpi_3mo_t),
+    gpi_6mo = coalesce(gpi_6mo, gpi_6mo_t),
+    epi_3mo = coalesce(epi_3mo, epi_3mo_t),
+    epi_6mo = coalesce(epi_6mo, epi_6mo_t),
+    recwotg_3mo = coalesce(recwotg_3mo, recwotg_3mo_t),
+    recwotg_6mo = coalesce(recwotg2fam_6mo, recwotg2fam_6mo_t)
+  ) |> 
+  select(
+    study_id, rand_round_2, psq_1mo, gpi_1mo, epi_1mo, recwotg_1mo,
+    psq_3mo, gpi_3mo, epi_3mo, recwotg_3mo, psq_6mo, gpi_6mo, epi_6mo, recwotg_6mo
+  ) |> 
+  mutate(
+    across(c(psq_1mo, psq_3mo, psq_6mo), ~ refmt(., psq_fmt)),
+    across(c(gpi_1mo, gpi_3mo, gpi_6mo), ~ refmt(., gpi_fmt)),
+    across(c(recwotg_1mo, recwotg_3mo, recwotg_6mo), ~ refmt(., recwotg_fmt)),
+    rand_round_2 = refmt(rand_round_2, armfmt) 
+  ) 
+
+# Lable variables
+var_label(df_exp) <- list(
+  psq_1mo = "Program satisfaction",
+  gpi_1mo = "Overall symptoms",
+  epi_1mo = "Estimated % improvement",
+  recwotg_1mo = "Recommend WOTG",
+  psq_3mo = "Program satisfaction",
+  gpi_3mo = "Overall symptoms",
+  epi_3mo = "Estimated % improvement",
+  recwotg_3mo = "Recommend WOTG",
+  psq_6mo = "Program satisfaction",
+  gpi_6mo = "Overall symptoms",
+  epi_6mo = "Estimated % improvement",
+  recwotg_6mo = "Recommend WOTG"
+  
+  
+)
+
+
+tbl_exp_m1 <- df_exp |> 
+  select(
+    study_id, rand_round_2, 
+    psq = psq_1mo, 
+    gpi = gpi_1mo, 
+    epi = epi_1mo, 
+    recwotg = recwotg_1mo
+  ) |> 
+  tbl_summary(
+    by = rand_round_2,
+    include = c(psq, gpi, epi, recwotg)
+  ) |> 
+  add_p() |> 
+  italicize_levels()
+
+
+tbl_exp_m3 <- df_exp |> 
+  select(
+    study_id, rand_round_2, 
+    psq = psq_3mo, 
+    gpi = gpi_3mo, 
+    epi = epi_3mo, 
+    recwotg = recwotg_3mo
+  ) |>
+  tbl_summary(
+    by = rand_round_2,
+    include = c(psq, gpi, epi, recwotg)
+  ) |>
+  add_p() |>
+  italicize_levels()
+
+tbl_exp_m6 <- df_exp |> 
+  select(
+    study_id, rand_round_2, 
+    psq = psq_6mo, 
+    gpi = gpi_6mo, 
+    epi = epi_6mo, 
+    recwotg = recwotg_6mo
+  ) |>
+  tbl_summary(
+    by = rand_round_2,
+    include = c(psq, gpi, epi, recwotg)
+  ) |>
+  add_p() |>
+  italicize_levels()
+
+
+# combine tables
+tbl_merge(list(tbl_exp_m1, tbl_exp_m3, tbl_exp_m6),
+          tab_spanner = c("**1 month**", "**3 months**", "**6 months**"))
 
 ```
 
