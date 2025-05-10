@@ -81,3 +81,15 @@ df_beh <- tmp1m |>
 
 ```
 
+```{r}
+# UI knowledge score
+# know_pads_bl, know_pads_1mo, know_pads_3mo, know_pads_3mo_t, know_pads_6mo, know_pads_6mo_t
+# know_exercises_bl, know_exercises_1mo, know_exercises_3mo, know_exercises_3mo_t, know_exercises_6mo, know_exercises_6mo_t
+# know_weight_bl, know_weight_1mo, know_weight_3mo, know_weight_3mo_t, know_weight_6mo, know_weight_6mo_t
+# know_oncestart_bl, know_oncestart_1mo, know_oncestart_3mo, know_oncestart_3mo_t, know_oncestart_6mo, know_oncestart_6mo_t
+# know_nonsurgery_bl, know_nonsurgery_1mo, know_nonsurgery_3mo, know_nonsurgery_3mo_t, know_nonsurgery_6mo, know_nonsurgery_6mo_t
+
+
+
+```
+

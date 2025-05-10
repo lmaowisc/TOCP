@@ -47,8 +47,9 @@ tmp <- read_excel("data/Merged_Baseline_and_1_month_Data_4_26_24_note_as_of_4_26
 # Date 1st weekly email was sent x
 # first time clicked on email link
 
-orb <- read_excel("data/data file orbita final.xlsx", sheet = 1,
-                  col_names= c("study_id", NA, NA, "domain_id", "page_num", "click_time"),
+orb <- read_excel("data/Orbita_2024_Women_on_the_Go_Data_Extract_03_19_25_for_Lu - deidentified.xlsx", sheet = 1,
+                  col_names= c("study_id", NA, NA, "domain_id", "page_num", NA,"click_time",
+                               NA, NA),
                   skip = 1) |> 
   select(study_id, domain_id, page_num, click_time)
 
@@ -326,13 +327,13 @@ var_label(tmp2) <- list(
 saveRDS(tmp2, "data/tmp2.rds")
 
 
-# demo <- tmp2 |> 
+# demo <- tmp2 |>
 #   tbl_summary(
 #     by = trt,
 #     include = c(ss_age, race, hisp, height_cm, weight_kg, bmi, ss_eligible_edu, work_status_bl, pcp_bl, health_insure,
 #                 preg_num, sf_q1_bl, medcond_bl___1:medcond_bl___8, relevantsurghx_bl___1:relevantsurghx_bl___6),
-#   ) |> 
-#   add_p() |> 
+#   ) |>
+#   add_p() |>
 #   italicize_levels()
 # 
 # saveRDS(demo, "data/demo.rds")
@@ -555,24 +556,24 @@ var_label(tmp_behav) <- list(
 
 
 # 
-# behav <- tmp_behav |>
-#   tbl_summary(by = trt,
-#               include = c(kegel_freq_bl:voidinterval_bl, -usecontainprod_bl___99),
-#               type = list(
-#                 use_liner_bl = "continuous",
-#                 use_pads_bl = "continuous",
-#                 use_depends_bl = "continuous"
-#               ),
-#               # round continuous statistics to first decimal point
-#               digits = list(
-#                 all_continuous() ~ 1
-#               )
-#   ) |>
-#   add_p() |>
-#   italicize_levels()
+behav <- tmp_behav |>
+  tbl_summary(by = trt,
+              include = c(kegel_freq_bl:voidinterval_bl, -usecontainprod_bl___99),
+              type = list(
+                use_liner_bl = "continuous",
+                use_pads_bl = "continuous",
+                use_depends_bl = "continuous"
+              ),
+              # round continuous statistics to first decimal point
+              digits = list(
+                all_continuous() ~ 1
+              )
+  ) |>
+  add_p() |>
+  italicize_levels()
 
 # # save to file, read file, and print table
-# saveRDS(behav, "data/behav.rds")
+saveRDS(behav, "data/behav.rds")
 behav <- readRDS("data/behav.rds")
 behav
 
@@ -706,8 +707,8 @@ var_label(bld_tmp) <- list(
   bics_hcpnoint_bl = "HCP not interested in my problem"
 )
 
-# bld <- bld_tmp |> 
-#   select(-iciqui_urineleak_bl___99) |> 
+# bld <- bld_tmp |>
+#   select(-iciqui_urineleak_bl___99) |>
 #   tbl_summary(by = trt,
 #               include = iciqui_leak_bl:bics_hcpnoint_bl,
 #               digits = list(
@@ -716,7 +717,7 @@ var_label(bld_tmp) <- list(
 #               ) |>
 #   add_p() |>
 #   italicize_levels()
-#   
+# 
 # saveRDS(bld, "data/bld.rds")
 bld <- readRDS("data/bld.rds")
 bld
