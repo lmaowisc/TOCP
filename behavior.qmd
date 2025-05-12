@@ -305,7 +305,11 @@ df_behx_6mo <- df_behx |>
 
 ```
 
+@tbl-ui-make-changes summarizes the longitudinal data on UI knowledge and behavior change intentions at baseline, 1 month, 3 months, and 6 months. 
+
 ```{r}
+#| label: tbl-ui-make-changes
+#| tbl-cap: "Longitudinal responses on UI knowledge and behavior change intentions."
 
 # Function to tabulate cross-sectional data
 # on UI scores and making changes
