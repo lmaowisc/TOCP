@@ -72,7 +72,85 @@ recwotg_fmt <- c(
 )
 
 armfmt <- c("1" = "Control", "2" = "Tailored")
-  
+
+# hapa_intentions: 
+# 0 I DID NOT THINK ABOUT making any
+# changes.
+# 1 I THOUGHT about making changes.
+# 2 I PLANNED to make changes.
+# 3 I MADE changes.
+# 4 My changes BECAME MY NEW ROUTINE.
+# 99 Choose not to answer (set to missing)
+
+hapa_fmt <- c(
+  "0" = "I did not think about making any changes",
+  "1" = "I thought about making changes",
+  "2" = "I planned to make changes",
+  "3" = "I made changes",
+  "4" = "My changes became my new routine",
+  "99" = NA
+)
+
+# 0 I am NOT PLANNING TO make any
+# changes.
+# 1 I MIGHT make a change.
+# 2 I PLAN TO make a change.
+# 3 I WILL KEEP ON making changes.
+# 4 I WILL CONTINUE MY NEW ROUTINE.
+# 99 Choose not to answer (set to missing)
+
+hapa_fmt2 <- c(
+  "0" = "I am not planning to make any changes",
+  "1" = "I might make a change",
+  "2" = "I plan to make a change",
+  "3" = "I will keep on making changes",
+  "4" = "I will continue my new routine",
+  "99" = NA
+)
+
+# 0 I am not worried about bladder or bowel
+# problems getting worse as I get older.
+# 1 If I make changes now, I can prevent
+# bladder or bowel problems in the future.
+# 2 I will have bladder or bowel problems as I
+# get older no matter what I do now.
+# 99 Choose not to answer (set to missing)
+
+hapa_older_fmt <- c(
+  "0" = "Not worried about bladder/bowel problems getting worse",
+  "1" = "If I make changes now, I can prevent problems",
+  "2" = "I will have bladder/bowel problems no matter what",
+  "99" = NA
+)
+
+
+# Coping self-efficacy
+# 0 When I make a plan, I stick to it, even if I
+# am tired or busy with other things.
+# 1 Even when I make a plan, other things can
+# get in the way of me following through
+# with the plan.
+# 99 Choose not to answer (set to missing)
+hapa_sticktoplan_fmt <- c(
+  "0" = "When I make a plan, I stick to it",
+  "1" = "Other things can get in the way",
+  "99" = NA
+)
+
+# Perceived support 
+# 0 I will have the support and resources I
+# need to meet my goals.
+# 1 It will be hard for me to meet my goals
+# because I don't have the support or
+# resources I need.
+# 99 Choose not to answer (set to missing)
+
+hapa_resources_fmt <- c(
+  "0" = "I will have the support and resources for my goals",
+  "1" = "I lack support or resources to meet my goals",
+  "99" = NA
+)
+
 df_beh <- tmp1m |> 
   left_join(tmp3mT, by = "study_id") |>
   left_join(tmp3mC, by = "study_id") |>
@@ -89,7 +167,188 @@ df_beh <- tmp1m |>
 # know_oncestart_bl, know_oncestart_1mo, know_oncestart_3mo, know_oncestart_3mo_t, know_oncestart_6mo, know_oncestart_6mo_t
 # know_nonsurgery_bl, know_nonsurgery_1mo, know_nonsurgery_3mo, know_nonsurgery_3mo_t, know_nonsurgery_6mo, know_nonsurgery_6mo_t
 
+## Function to calculate  UI score
+ui_score <- function(know_pads, know_exercises, know_weight, know_oncestart, know_nonsurgery){
+  
+  score <- (know_pads == 2) +
+           (know_exercises == 1) +
+           (know_weight == 1) +
+           (know_oncestart == 2) +
+           (know_nonsurgery == 2)
+  
+  score
+}
+
+# Create a unified variable for UI knowledge 
+df_beth0 <- df_beh |> 
+  mutate(
+    # UI knowledge
+    know_pads_3mo = coalesce(know_pads_3mo, know_pads_3mo_t),
+    know_pads_6mo = coalesce(know_pads_6mo, know_pads_6mo_t),
+    know_exercises_3mo = coalesce(know_exercises_3mo, know_exercises_3mo_t),
+    know_exercises_6mo = coalesce(know_exercise_6mo, know_exercises_6mo_t),
+    know_weight_3mo = coalesce(know_weight_3mo, know_weight_3mo_t),
+    know_weight_6mo = coalesce(know_weight_6mo, know_weight_6mo_t),
+    know_oncestart_3mo = coalesce(know_oncestart_3mo, know_oncestart_3mo_t),
+    know_oncestart_6mo = coalesce(know_oncestart_6mo, know_oncestart_6mo_t),
+    know_nonsurgery_3mo = coalesce(know_nonsurgery_3mo, know_nonsurgery_3mo_t),
+    know_nonsurgery_6mo = coalesce(know_nonsurgery_6mo, know_nonsurgery_6mo_t),
+    # Behavior change
+    # Last month
+    hapa_intentions_last_bl = hapa_intentions_bl,
+    hapa_intentions_last_1mo = hapa_intentions_last_1mo,
+    hapa_intentions_last_3mo = coalesce(hapa_intentions_last_3mo, hapa_intentions_last_3mo_t),
+    hapa_intentions_last_6mo = coalesce(hapa_intentions_last_6mo, hapa_intentions_last_6mo_t),
+    across(
+      starts_with("hapa_intentions_last"), ~ refmt(., hapa_fmt)
+    ),
+    # Next month
+    hapa_intentions_plans_bl = hapa_intentions_bl_2,
+    hapa_intentions_plans_1mo = hapa_intentions_plans_1mo,
+    hapa_intentions_plans_3mo = coalesce(hapa_intentions_plans_3mo, hapa_intentions_plans_3mo_t),
+    hapa_intentions_plans_6mo = coalesce(hapa_intentions_plans_6mo, hapa_intentions_plans_6mo_t),
+    across(
+      starts_with("hapa_intentions_plans"), ~ refmt(., hapa_fmt2)
+    ),
+    # Risk perception
+    hapa_older_bl = hapa_older_bl,
+    hapa_older_1mo = hapa_older_1mo,
+    hapa_older_3mo = coalesce(hapa_older_3mo, hapa_older_3mo_t),
+    hapa_older_6mo = NA,
+    across(
+      starts_with("hapa_older"), ~ refmt(., hapa_older_fmt)
+    ),
+    # Coping self-efficacy 
+    hapa_sticktoplan_bl = hapa_sticktoplan_bl,
+    hapa_sticktoplan_1mo = hapa_sticktoplan_1mo,
+    hapa_sticktoplan_3mo = coalesce(hapa_sticktoplan_3mo, hapa_sticktoplan_3mo_t),
+    hapa_sticktoplan_6mo = NA,
+    across(
+      starts_with("hapa_sticktoplan"), ~ refmt(., hapa_sticktoplan_fmt)
+    ),
+    # Perceived support
+    hapa_resources_bl = hapa_resources_bl,
+    hapa_resources_1mo = hapa_resources_1mo,
+    hapa_resources_3mo = coalesce(hapa_resources_3mo, hapa_resources_3mo_t),
+    hapa_resources_6mo = NA,
+    across(
+      starts_with("hapa_resources"), ~ refmt(., hapa_resources_fmt)
+    ),
+    
+    # Randomization status
+    rand_round_2 = refmt(rand_round_2, armfmt)
+  ) 
+  
+
+# df_beh |>
+#   count(rand_round_2, hapa_resources_3mo, hapa_resources_3mo_t)
+
+# create UI scores at baseline, 1 month, 3 months, and 6 months
+df_beh1 <- df_beth0 |> 
+  mutate(
+    ui_score_bl = ui_score(know_pads_bl, know_exercises_bl, know_weight_bl, know_oncestart_bl, know_nonsurgery_bl),
+    ui_score_1mo = ui_score(know_pads_1mo, know_exercises_1mo, know_weight_1mo, know_oncestart_1mo, know_nonsurgery_1mo),
+    ui_score_3mo = ui_score(know_pads_3mo, know_exercises_3mo, know_weight_3mo, know_oncestart_3mo, know_nonsurgery_3mo),
+    ui_score_6mo = ui_score(know_pads_6mo, know_exercises_6mo, know_weight_6mo, know_oncestart_6mo, know_nonsurgery_6mo)
+  )
 
 
+df_behx <- df_beh1 |> 
+  select(
+   study_id, rand_round_2, 
+   contains("ui_score"), 
+   contains("hapa_intentions_last"),
+   contains("hapa_intentions_plans"),
+   contains("hapa_older"),
+   contains("hapa_sticktoplan"),
+   contains("hapa_resources")
+  )
+  
+# Baseline
+df_behx_bl <- df_behx |> 
+  rename_with(~ str_remove(.x, "_bl$")) |> 
+  select(
+    study_id, rand_round_2, 
+    ui_score, hapa_intentions_last, 
+    hapa_intentions_plans, hapa_older,
+    hapa_sticktoplan, hapa_resources
+  )
+# 1 month
+df_behx_1mo <- df_behx |> 
+  rename_with(~ str_remove(.x, "_1mo$")) |> 
+  select(
+    study_id, rand_round_2, 
+    ui_score, hapa_intentions_last, 
+    hapa_intentions_plans, hapa_older,
+    hapa_sticktoplan, hapa_resources
+  )
+
+# 3 month
+df_behx_3mo <- df_behx |> 
+  rename_with(~ str_remove(.x, "_3mo$")) |> 
+  select(
+    study_id, rand_round_2, 
+    ui_score, hapa_intentions_last, 
+    hapa_intentions_plans, hapa_older,
+    hapa_sticktoplan, hapa_resources
+  )
+
+# 6 month
+df_behx_6mo <- df_behx |> 
+  rename_with(~ str_remove(.x, "_6mo$")) |> 
+  select(
+    study_id, rand_round_2, 
+    ui_score, hapa_intentions_last, 
+    hapa_intentions_plans, hapa_older,
+    hapa_sticktoplan, hapa_resources
+  )
+
+```
+
+```{r}
+
+# Function to tabulate cross-sectional data
+# on UI scores and making changes
+# at baseline, 1 month, 3 months, and 6 months
+
+ui_make_changes_tbl <- function(df_behx_xx){
+
+  df_behx_xx |> 
+    tbl_summary(
+      by = rand_round_2,
+      include = - study_id,
+      type = list(
+        ui_score ~ "continuous",
+        hapa_intentions_last ~ "categorical"
+      ),
+      label = list(
+        ui_score ~ "UI Knowledge Score",
+        hapa_intentions_last ~ "Behavior Change Intention - Last Month",
+        hapa_intentions_plans ~ "Behavior Change Plan - Next Month",
+        hapa_older ~ "Risk Perception - As I get older",
+        hapa_sticktoplan ~ "Coping Self-Efficacy",
+        hapa_resources ~ "Perceived Support"
+      ),
+      statistic = all_continuous() ~ "{mean} ({sd})",
+      digits = all_continuous() ~ 1
+    ) |> 
+    add_p() |> 
+    italicize_levels() |> 
+    bold_labels()
+
+}
+
+# Baseline
+ui_tbl_base <- ui_make_changes_tbl(df_behx_bl) 
+# 1 month
+ui_tbl_1mo <- ui_make_changes_tbl(df_behx_1mo)
+# 3 month
+ui_tbl_3mo <- ui_make_changes_tbl(df_behx_3mo)
+# 6 month
+ui_tbl_6mo <- ui_make_changes_tbl(df_behx_6mo)
+
+# combine tables
+tbl_merge(list(ui_tbl_base, ui_tbl_1mo, ui_tbl_3mo, ui_tbl_6mo), 
+          tab_spanner = c("Baseline", "1 Month", "3 Months", "6 Months")) 
 ```
 

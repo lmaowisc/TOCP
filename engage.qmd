@@ -379,25 +379,45 @@ rank_page <- function(df, k = 10) {
      tailored = str_c(page_num, " (", n, ")")
    ) |> select(tailored)
  
-  cbind(overall, control, tailored)
- 
- 
+  # Find the maximum number of rows
+n <- max(nrow(overall), nrow(control), nrow(tailored))
+
+# Define a helper to pad rows with NAs
+pad_rows <- function(df, n) {
+  if (nrow(df) < n) {
+    pad <- tibble(row = (nrow(df) + 1):n) %>%
+      mutate(across(everything(), ~ NA)) %>%
+      select(-row)
+    bind_rows(df, pad)
+  } else {
+    df
+  }
+}
+
+# Pad each tibble to the same number of rows
+overall_pad <- pad_rows(overall, n)
+control_pad <- pad_rows(control, n)
+tailored_pad <- pad_rows(tailored, n)
+
+# Combine them column-wise
+bind_cols(overall_pad, control_pad, tailored_pad)
  }
   
 
 df24 <- df |> 
   filter(day <= 24 * 7)
 
+
 # By total clicks
-tot_click_rank <- rank_page(df24, 10) 
-pat_click_rank <- rank_page(df24 |> distinct(study_id, trt, page_num), 10)
+tot_click_rank <- rank_page(df24, 10) |> filter(row_number() <= 10)
+pat_click_rank <- rank_page(df24 |> distinct(study_id, trt, page_num), 10) |> filter(row_number() <= 10)
 
 
 colnames(tot_click_rank) <- c("all_clicks", "control_clicks", "tailored_clicks")
 colnames(pat_click_rank) <- c("all_patients", "control_patients", "tailored_patients")
 
-
-
+# nr <- nrow(pat_click_rank)
+# rank_col <- c(1:nr, rep(10, 10 - nr))
 
 bind_cols(tibble(Rank = 1:10), tot_click_rank, pat_click_rank) |> 
   gt() |> 
