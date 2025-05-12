@@ -29,7 +29,9 @@ refmt <- function(var, fmt){
 miss99 <- function(x){
   as.numeric(if_else(x == 99, NA, x))
 }
-
+miss999 <- function(x){
+  as.numeric(if_else(x == 999, NA, x))
+}
 ```
 
 ```{r}
@@ -151,6 +153,20 @@ hapa_resources_fmt <- c(
   "99" = NA
 )
 
+# fiber_guess
+# radio, Required
+# 1 Less than I should
+# 2 About what I should
+# 3 More than I should
+#  99 Choose not to answer (set to missing)
+fiber_fmt <- c(
+  "1" = "Less than I should",
+  "2" = "About what I should",
+  "3" = "More than I should",
+  "99" = NA
+)
+
+
 df_beh <- tmp1m |> 
   left_join(tmp3mT, by = "study_id") |>
   left_join(tmp3mC, by = "study_id") |>
@@ -234,14 +250,67 @@ df_beth0 <- df_beh |>
     across(
       starts_with("hapa_resources"), ~ refmt(., hapa_resources_fmt)
     ),
+    # Self-reported Program use
+    bitus_lastmo_bl = NA,
+    bitus_intend_bl = miss99(bitus_intend_bl),
+    bitus_predict_bl = miss99(bitus_predict_bl),
+    bitus_lastmo_1mo = miss99(bitus_lastmo_1mo),
+    bitus_intend_1mo = miss99(bitus_intend_1mo),
+    bitus_predict_1mo = miss99(bitus_predict_1mo),
+    bitus_lastmo_3mo = miss99(coalesce(bitus_lastmo_3mo, bitus_lastmo_3mo_t)),
+    bitus_intend_3mo = miss99(coalesce(bitus_intend_3mo, bitus_intend_3mo_t)),
+    bitus_predict_3mo = miss99(coalesce(bitus_predict_3mo, bitus_predict_3mo_t)),
+    bitus_lastmo_6mo = miss99(coalesce(bitus_lastmo_6mo, bitus_lastmo_6mo_t)),
+    bitus_intend_6mo = miss99(coalesce(bitus_intend_6mo, bitus_intend_6mo_t)),
+    bitus_predict_6mo = NA,
+    # Current Health Behaviors
+    # questions are about thing s you do that may impact bladde r or bowe l he alth.
+      # Kegels requency score (1-6)
+    kegel_freq_bl = miss99(kegel_freq_bl), # 1-6
+    kegel_freq_1mo = miss99(kegel_freq_1mo),
+    kegel_freq_3mo = miss99(coalesce(kegel_freq_3mo, kegel_freq_3mo_t)),
+    kegel_freq_6mo = miss99(coalesce(kegel_freq_6mo, kegel_freq_6mo_t)),
+      # Perceived fiber intake
+    fiber_guess_bl = fiber_guess_bl,
+    fiber_guess_1mo = fiber_guess_1mo,
+    fiber_guess_3mo = coalesce(fiber_guess_3mo, fiber_guess_3mo_t),
+    fiber_guess_6mo = coalesce(fiber_guess_6mo, fiber_guess_6mo_t),
+    across(
+      starts_with("fiber_guess"), ~ refmt(., fiber_fmt)
+    ),
+    # Perceived fluid intake
+    fluid_guess_bl = fluid_guess_bl,
+    fluid_guess_1mo = fluid_guess_1mo,
+    fluid_guess_3mo = coalesce(fluid_guess_3mo, fluid_guess_3mo_t),
+    fluid_guess_6mo = coalesce(fluid_guess_6mo, fluid_guess_6mo_t),
+    across(
+      starts_with("fluid_guess"), ~ refmt(., fiber_fmt)
+    ),
+    # Estimated daily fluid intake
+    est_totalfluid_bl = miss999(est_totalfluid_bl),
+    est_totalfluid_1mo = miss999(est_totalfluid_1mo),
+    est_totalfluid_3mo = miss999(coalesce(est_totalfluid_3mo, est_totalfluid_3mo_t)),
+    est_totalfluid_6mo = miss999(coalesce(est_totalfluid_6mo, est_totalfluid_6mo_t)),
+    # Estimated coffee servings score (0-5)
+    freq_coffee_bl = miss99(freq_coffee_bl),
+    freq_coffee_1mo = miss99(freq_coffee_1mo),
+    freq_coffee_3mo = miss99(coalesce(freq_coffee_3mo, freq_coffee_3mo_t)),
+    freq_coffee_6mo = miss99(coalesce(freq_coffee_6mo, freq_coffee_6mo_t)),
+    # Estimated soda servings score (0-5)
+    freq_soda_bl = miss99(freq_soda_bl),
+    freq_soda_1mo = miss99(freq_soda_1mo),
+    freq_soda_3mo = miss99(coalesce(freq_soda_3mo, freq_soda_3mo_t)),
+    freq_soda_6mo = miss99(coalesce(freq_soda_6mo, freq_soda_6mo_t)),
+    
+    
     
     # Randomization status
     rand_round_2 = refmt(rand_round_2, armfmt)
   ) 
   
-
-# df_beh |>
-#   count(rand_round_2, hapa_resources_3mo, hapa_resources_3mo_t)
+# 
+ # df_beh |>
+ #   count(rand_round_2, est_totalfluid_bl) 
 
 # create UI scores at baseline, 1 month, 3 months, and 6 months
 df_beh1 <- df_beth0 |> 
@@ -261,7 +330,17 @@ df_behx <- df_beh1 |>
    contains("hapa_intentions_plans"),
    contains("hapa_older"),
    contains("hapa_sticktoplan"),
-   contains("hapa_resources")
+   contains("hapa_resources"),
+   contains("bitus_lastmo"),
+   contains("bitus_intend"),
+   contains("bitus_predict"),
+   contains("kegel_freq"),
+   contains("fiber_guess"),
+   contains("fluid_guess"),
+   contains("est_totalfluid"),
+   contains("freq_coffee"),
+   contains("freq_soda")
+   
   )
   
 # Baseline
@@ -271,7 +350,10 @@ df_behx_bl <- df_behx |>
     study_id, rand_round_2, 
     ui_score, hapa_intentions_last, 
     hapa_intentions_plans, hapa_older,
-    hapa_sticktoplan, hapa_resources
+    hapa_sticktoplan, hapa_resources,
+    bitus_lastmo, bitus_intend, bitus_predict,
+    kegel_freq, fiber_guess, fluid_guess,
+    est_totalfluid, freq_coffee, freq_soda
   )
 # 1 month
 df_behx_1mo <- df_behx |> 
@@ -280,7 +362,10 @@ df_behx_1mo <- df_behx |>
     study_id, rand_round_2, 
     ui_score, hapa_intentions_last, 
     hapa_intentions_plans, hapa_older,
-    hapa_sticktoplan, hapa_resources
+    hapa_sticktoplan, hapa_resources,
+    bitus_lastmo, bitus_intend, bitus_predict,
+    kegel_freq, fiber_guess, fluid_guess,
+    est_totalfluid, freq_coffee, freq_soda
   )
 
 # 3 month
@@ -290,7 +375,10 @@ df_behx_3mo <- df_behx |>
     study_id, rand_round_2, 
     ui_score, hapa_intentions_last, 
     hapa_intentions_plans, hapa_older,
-    hapa_sticktoplan, hapa_resources
+    hapa_sticktoplan, hapa_resources,
+    bitus_lastmo, bitus_intend, bitus_predict,
+    kegel_freq, fiber_guess, fluid_guess,
+    est_totalfluid, freq_coffee, freq_soda
   )
 
 # 6 month
@@ -300,10 +388,15 @@ df_behx_6mo <- df_behx |>
     study_id, rand_round_2, 
     ui_score, hapa_intentions_last, 
     hapa_intentions_plans, hapa_older,
-    hapa_sticktoplan, hapa_resources
+    hapa_sticktoplan, hapa_resources,
+    bitus_lastmo, bitus_intend, bitus_predict,
+    kegel_freq, fiber_guess, fluid_guess,
+    est_totalfluid, freq_coffee, freq_soda
   )
 
 ```
+
+## UI knowledge and behavior change intentions
 
 @tbl-ui-make-changes summarizes the longitudinal data on UI knowledge and behavior change intentions at baseline, 1 month, 3 months, and 6 months. 
 
@@ -320,13 +413,20 @@ ui_make_changes_tbl <- function(df_behx_xx){
   df_behx_xx |> 
     tbl_summary(
       by = rand_round_2,
-      include = - study_id,
+      include = c(
+        ui_score, 
+        hapa_intentions_last, 
+        hapa_intentions_plans,
+        hapa_older,
+        hapa_sticktoplan,
+        hapa_resources
+      ),
       type = list(
         ui_score ~ "continuous",
         hapa_intentions_last ~ "categorical"
       ),
       label = list(
-        ui_score ~ "UI Knowledge Score",
+        ui_score ~ "UI Knowledge Score (0-5)",
         hapa_intentions_last ~ "Behavior Change Intention - Last Month",
         hapa_intentions_plans ~ "Behavior Change Plan - Next Month",
         hapa_older ~ "Risk Perception - As I get older",
@@ -354,5 +454,119 @@ ui_tbl_6mo <- ui_make_changes_tbl(df_behx_6mo)
 # combine tables
 tbl_merge(list(ui_tbl_base, ui_tbl_1mo, ui_tbl_3mo, ui_tbl_6mo), 
           tab_spanner = c("Baseline", "1 Month", "3 Months", "6 Months")) 
+```
+
+@tbl-program-use summarizes the longitudinal data on self-reported program use at baseline, 1 month, 3 months, and 6 months.
+```{r}
+#| label: tbl-program-use
+#| tbl-cap: "Longitudinal responses on self-reported program use."
+
+# Function to tabulate cross-sectional data
+# on self-reported program use
+# at baseline, 1 month, 3 months, and 6 months
+
+program_use_tbl <- function(df_behx_xx){
+
+  df_behx_xx |> 
+    tbl_summary(
+      by = rand_round_2,
+      include = c(bitus_lastmo, bitus_intend, bitus_predict),
+      type = list(
+        bitus_lastmo ~ "continuous",
+        bitus_intend ~ "continuous",
+        bitus_predict ~ "continuous"
+      ),
+      label = list(
+        bitus_lastmo ~ "Last Month Score (0-5)",
+        bitus_intend ~ "Intention to Use Score  (0-5)",
+        bitus_predict ~ "Predicted Use Score  (0-5)"
+      ),
+      statistic = all_continuous() ~ "{mean} ({sd})",
+      digits = all_continuous() ~ 1
+    ) |> 
+    add_p() |> 
+    italicize_levels() |> 
+    bold_labels()
+
+}
+
+# Baseline
+program_use_tbl_base <- program_use_tbl(df_behx_bl)
+# 1 month
+program_use_tbl_1mo <- program_use_tbl(df_behx_1mo)
+# 3 month
+program_use_tbl_3mo <- program_use_tbl(df_behx_3mo)
+# 6 month
+program_use_tbl_6mo <- program_use_tbl(df_behx_6mo)
+# combine tables
+tbl_merge(list(program_use_tbl_base, program_use_tbl_1mo, program_use_tbl_3mo, program_use_tbl_6mo), 
+          tab_spanner = c("Baseline", "1 Month", "3 Months", "6 Months"))
+
+```
+
+
+
+## Current health behaviors
+@tbl-quest summarizes the longitudinal responses to questions about things you do that may impact bladder or bowel health at baseline, 1 month, 3 months, and 6 months.
+
+```{r}
+#| label: tbl-quest
+#| tbl-cap: Longitudinal responses to questions about things you do that may impact bladder or bowel health.
+
+# Function to tabulate cross-sectional data
+# on questions about things you do
+# that may impact bladder or bowel health
+# at baseline, 1 month, 3 months, and 6 months
+quest_tbl <- function(df_behx_xx){
+
+  df_behx_xx |> 
+    tbl_summary(
+      by = rand_round_2,
+      include = c(
+        kegel_freq, fiber_guess, fluid_guess,
+        est_totalfluid, freq_coffee, freq_soda
+      ),
+      type = list(
+        kegel_freq ~ "continuous",
+        fiber_guess ~ "categorical",
+        fluid_guess ~ "categorical",
+        est_totalfluid ~ "continuous2",
+        freq_coffee ~ "continuous",
+        freq_soda ~ "continuous"
+      ),
+      label = list(
+        kegel_freq ~ "Kegel Frequency Score (1-6)",
+        fiber_guess ~ "Perceived Fiber Intake",
+        fluid_guess ~ "Perceived Fluid Intake",
+        est_totalfluid ~ "Estimated Daily Fluid Intake (oz)",
+        freq_coffee ~ "Estimated Coffee Servings Score (0-5)",
+        freq_soda ~ "Estimated Soda Servings Score (0-5)"
+      ),
+      statistic = list(all_continuous() ~ "{mean} ({sd})",
+                       # Median (IQR) for est_totalfluid
+                       est_totalfluid ~ "{median} ({p25}, {p75})"
+                       ),
+      digits = all_continuous() ~ 1
+    ) |> 
+    add_p() |> 
+    italicize_levels() |> 
+    bold_labels()
+
+}
+
+# Baseline
+quest_tbl_base <- quest_tbl(df_behx_bl)
+# 1 month
+quest_tbl_1mo <- quest_tbl(df_behx_1mo)
+# 3 month
+quest_tbl_3mo <- quest_tbl(df_behx_3mo)
+# 6 month
+quest_tbl_6mo <- quest_tbl(df_behx_6mo)
+
+# combine tables
+tbl_merge(list(quest_tbl_base, quest_tbl_1mo, quest_tbl_3mo, quest_tbl_6mo), 
+          tab_spanner = c("Baseline", "1 Month", "3 Months", "6 Months"))
+
+
 ```
 
