@@ -32,6 +32,71 @@ miss99 <- function(x){
 miss999 <- function(x){
   as.numeric(if_else(x == 999, NA, x))
 }
+
+# Calculator of fiber/salad/vegetable-soup/whole-wheat intake score
+# 0.5 1 1 1.5 2 3
+fiber_score <- function(x) 
+  case_when(
+    x == 1 ~ 0.5,
+    x == 2 ~ 1,
+    x == 3 ~ 1,
+    x == 4 ~ 1.5,
+    x == 5 ~ 2,
+    x == 6 ~ 3,
+    TRUE ~ NA
+  )
+
+# Calculator of Potatoes/oatmeal/vegetables intake score
+# 1 1 1.5 2 3 5
+potatoes_score <- function(x) 
+  case_when(
+    x == 1 ~ 1,
+    x == 2 ~ 1,
+    x == 3 ~ 1.5,
+    x == 4 ~ 2,
+    x == 5 ~ 3,
+    x == 6 ~ 5,
+    TRUE ~ NA
+  )
+
+# Calculator of  Vegetable juice intake score
+# 0 0 0 0 0 3
+veggie_juice_score <- function(x) 
+  case_when(
+    x == 1 ~ 0,
+    x == 2 ~ 0,
+    x == 3 ~ 0,
+    x == 4 ~ 0,
+    x == 5 ~ 0,
+    x == 6 ~ 3,
+    TRUE ~ NA
+  )
+
+# Calculator of fiber cereal intake score
+# 2 2 4 6 7 12
+fiber_cereal_score <- function(x) 
+  case_when(
+    x == 1 ~ 2,
+    x == 2 ~ 2,
+    x == 3 ~ 4,
+    x == 4 ~ 6,
+    x == 5 ~ 7,
+    x == 6 ~ 12,
+    TRUE ~ NA
+  )
+
+# Calculator of beans intake score
+# 2 2 3 5 6 10
+beans_score <- function(x) 
+  case_when(
+    x == 1 ~ 2,
+    x == 2 ~ 2,
+    x == 3 ~ 3,
+    x == 4 ~ 5,
+    x == 5 ~ 6,
+    x == 6 ~ 10,
+    TRUE ~ NA
+  )
 ```
 
 ```{r}
@@ -264,7 +329,7 @@ df_beth0 <- df_beh |>
     bitus_intend_6mo = miss99(coalesce(bitus_intend_6mo, bitus_intend_6mo_t)),
     bitus_predict_6mo = NA,
     # Current Health Behaviors
-    # questions are about thing s you do that may impact bladde r or bowe l he alth.
+    # Questions are about thing s you do that may impact bladde r or bowe l he alth.
       # Kegels requency score (1-6)
     kegel_freq_bl = miss99(kegel_freq_bl), # 1-6
     kegel_freq_1mo = miss99(kegel_freq_1mo),
@@ -301,8 +366,58 @@ df_beth0 <- df_beh |>
     freq_soda_1mo = miss99(freq_soda_1mo),
     freq_soda_3mo = miss99(coalesce(freq_soda_3mo, freq_soda_3mo_t)),
     freq_soda_6mo = miss99(coalesce(freq_soda_6mo, freq_soda_6mo_t)),
-    
-    
+    # How much fiber you get through foods you eat
+    # Calculated from these variables
+    # Fruit
+    fruit_bl = fiber_score(fruit_bl),
+    fruit_1mo = fiber_score(fruit_1mo),
+    fruit_3mo = fiber_score(coalesce(fruit_3mo, fruit_3mo_t)),
+    fruit_6mo = fiber_score(coalesce(fruit_6mo, fruit_6mo_t)),
+    # Green salad
+    grnsalad_bl = fiber_score(grnsalad_bl),
+    grnsalad_1mo = fiber_score(grnsalad_1mo),
+    grnsalad_3mo = fiber_score(coalesce(grnsalad_3mo, grnsalad_3mo_t)),
+    grnsalad_6mo = fiber_score(coalesce(grnsalad_6mo, grnsalad_6mo_t)),
+    # Potatoes or oatmeal
+    potato_bl = potatoes_score(potato_bl),
+    potato_1mo = potatoes_score(potato_1mo),
+    potato_3mo = potatoes_score(coalesce(potato_3mo, potato_3mo_t)),
+    potato_6mo = potatoes_score(coalesce(potato_6mo, potato_6mo_t)),
+    # Vegetables
+    vegetable_bl = potatoes_score(vegetable_bl),
+    vegetable_1mo = potatoes_score(vegetable_1mo),
+    vegetable_3mo = potatoes_score(coalesce(vegetable_3mo, vegetable_3mo_t)),
+    vegetable_6mo = potatoes_score(coalesce(vegetable_6mo, vegetable_6mo_t)),
+    # Vegetable juice
+    vegetjuice_bl = veggie_juice_score(vegetjuice_bl),
+    vegetjuice_1mo = veggie_juice_score(vegetjuice_1mo),
+    vegetjuice_3mo = veggie_juice_score(coalesce(vegetjuice_3mo, vegetjuice_3mo_t)),
+    vegetjuice_6mo = veggie_juice_score(coalesce(vegetjuice_6mo, vegetjuice_6mo_t)),
+    # Vegetable soup
+    vegetsoup_bl = fiber_score(vegetsoup_bl),
+    vegetsoup_1mo = fiber_score(vegetsoup_1mo),
+    vegetsoup_3mo = fiber_score(coalesce(vegetsoup_3mo, vegetsoup_3mo_t)),
+    vegetsoup_6mo = fiber_score(coalesce(vegetsoup_6mo, vegetsoup_6mo_t)),
+    # Cereal
+    cereal_bl = fiber_cereal_score(cereal_bl),
+    cereal_1mo = fiber_cereal_score(cereal_1mo),
+    cereal_3mo = fiber_cereal_score(coalesce(cereal_3mo, cereal_3mo_t)),
+    cereal_6mo = fiber_cereal_score(coalesce(cereal_6mo, cereal_6mo_t)),
+    # Whole wheat bread
+    wheat_bread_bl = fiber_score(wheat_bread_bl),
+    wheat_bread_1mo = fiber_score(wheat_bread_1mo),
+    wheat_bread_3mo = fiber_score(coalesce(wheat_bread_3mo, wheat_bread_3mo_t)),
+    wheat_bread_6mo = fiber_score(coalesce(wheat_bread_6mo, wheat_bread_6mo_t)),
+    # Beans
+    beans_bl = beans_score(beans_bl),
+    beans_1mo = beans_score(beans_1mo),
+    beans_3mo = beans_score(coalesce(beans_3mo, beans_3mo_t)),
+    beans_6mo = beans_score(coalesce(beans_6mo, beans_6mo_t)),
+    # Create total fiber score
+    fiber_score_bl = fruit_bl + grnsalad_bl + potato_bl + vegetable_bl + vegetjuice_bl + vegetsoup_bl + cereal_bl + wheat_bread_bl + beans_bl,
+    fiber_score_1mo = fruit_1mo + grnsalad_1mo + potato_1mo + vegetable_1mo + vegetjuice_1mo + vegetsoup_1mo + cereal_1mo + wheat_bread_1mo + beans_1mo,
+    fiber_score_3mo = fruit_3mo + grnsalad_3mo + potato_3mo + vegetable_3mo + vegetjuice_3mo + vegetsoup_3mo + cereal_3mo + wheat_bread_3mo + beans_3mo,
+    fiber_score_6mo = fruit_6mo + grnsalad_6mo + potato_6mo + vegetable_6mo + vegetjuice_6mo + vegetsoup_6mo + cereal_6mo + wheat_bread_6mo + beans_6mo,
     
     # Randomization status
     rand_round_2 = refmt(rand_round_2, armfmt)
@@ -310,7 +425,7 @@ df_beth0 <- df_beh |>
   
 # 
  # df_beh |>
- #   count(rand_round_2, est_totalfluid_bl) 
+ #   count(rand_round_2, beans_6mo, beans_6mo_t)
 
 # create UI scores at baseline, 1 month, 3 months, and 6 months
 df_beh1 <- df_beth0 |> 
@@ -339,7 +454,8 @@ df_behx <- df_beh1 |>
    contains("fluid_guess"),
    contains("est_totalfluid"),
    contains("freq_coffee"),
-   contains("freq_soda")
+   contains("freq_soda"),
+   contains("fiber_score")
    
   )
   
@@ -353,7 +469,8 @@ df_behx_bl <- df_behx |>
     hapa_sticktoplan, hapa_resources,
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
-    est_totalfluid, freq_coffee, freq_soda
+    est_totalfluid, freq_coffee, freq_soda,
+    fiber_score
   )
 # 1 month
 df_behx_1mo <- df_behx |> 
@@ -365,7 +482,8 @@ df_behx_1mo <- df_behx |>
     hapa_sticktoplan, hapa_resources,
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
-    est_totalfluid, freq_coffee, freq_soda
+    est_totalfluid, freq_coffee, freq_soda,
+    fiber_score
   )
 
 # 3 month
@@ -378,7 +496,8 @@ df_behx_3mo <- df_behx |>
     hapa_sticktoplan, hapa_resources,
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
-    est_totalfluid, freq_coffee, freq_soda
+    est_totalfluid, freq_coffee, freq_soda,
+    fiber_score
   )
 
 # 6 month
@@ -391,7 +510,8 @@ df_behx_6mo <- df_behx |>
     hapa_sticktoplan, hapa_resources,
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
-    est_totalfluid, freq_coffee, freq_soda
+    est_totalfluid, freq_coffee, freq_soda,
+    fiber_score
   )
 
 ```
@@ -524,7 +644,7 @@ quest_tbl <- function(df_behx_xx){
       by = rand_round_2,
       include = c(
         kegel_freq, fiber_guess, fluid_guess,
-        est_totalfluid, freq_coffee, freq_soda
+        est_totalfluid, freq_coffee, freq_soda, fiber_score
       ),
       type = list(
         kegel_freq ~ "continuous",
@@ -532,7 +652,8 @@ quest_tbl <- function(df_behx_xx){
         fluid_guess ~ "categorical",
         est_totalfluid ~ "continuous2",
         freq_coffee ~ "continuous",
-        freq_soda ~ "continuous"
+        freq_soda ~ "continuous",
+        fiber_score ~ "continuous"
       ),
       label = list(
         kegel_freq ~ "Kegel Frequency Score (1-6)",
@@ -540,7 +661,8 @@ quest_tbl <- function(df_behx_xx){
         fluid_guess ~ "Perceived Fluid Intake",
         est_totalfluid ~ "Estimated Daily Fluid Intake (oz)",
         freq_coffee ~ "Estimated Coffee Servings Score (0-5)",
-        freq_soda ~ "Estimated Soda Servings Score (0-5)"
+        freq_soda ~ "Estimated Soda Servings Score (0-5)",
+        fiber_score ~ "Fiber Intake Score (0-36)"
       ),
       statistic = list(all_continuous() ~ "{mean} ({sd})",
                        # Median (IQR) for est_totalfluid
