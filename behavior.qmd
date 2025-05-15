@@ -97,6 +97,135 @@ beans_score <- function(x)
     x == 6 ~ 10,
     TRUE ~ NA
   )
+
+# Pad use
+# 1 usecontainprod_bl___1 I use panty
+# liners
+# 2 usecontainprod_bl___2 I use pads
+# 3 usecontainprod_bl___3 I use
+# undergarments
+# (like Depends or
+# diapers)4 usecontainprod_bl___4 I use something
+# else
+# 5 usecontainprod_bl___5 I do not use
+# anything
+
+# incont_money_bl
+# 0 None
+# 1 Less than $5
+# 2 $5 - $10
+# 3 $11 - $20
+# 4 $21 - $30
+# 5 $31 - $50
+# 6 $51 - $100
+# 7 $101 - $200
+# 8 More than $200
+# 99 Choose not to answer (set to missing)
+money_fmt <- c(
+  "0" = "None",
+  "1" = "Less than $5",
+  "2" = "$5 - $10",
+  "3" = "$11 - $20",
+  "4" = "$21 - $30",
+  "5" = "$31 - $50",
+  "6" = "$51 - $100",
+  "7" = "$101 - $200",
+  "8" = "More than $200",
+  "99" = NA
+)
+
+# daytimevoids_bl
+# 1 less than 4 times per day
+# 2 4-5 times
+# 3 6-8 times
+# 4 9-10 times
+# 5 11-12 times
+# 6 more than 12 times per day
+# 99 Choose not to answer
+daytimevoids_fmt <- c(
+  "1" = "Less than 4 times per day",
+  "2" = "4-5 times",
+  "3" = "6-8 times",
+  "4" = "9-10 times",
+  "5" = "11-12 times",
+  "6" = "More than 12 times per day",
+  "99" = NA
+)
+
+# voidinterval_bl
+# 1 4 hours or more
+# 2 3 hours
+# 3 2 hours
+# 4 1 hour5 less than 1 hour
+# 99 Choose not to answer
+voidinterval_fmt <- c(
+  "1" = "4 hours or more",
+  "2" = "3 hours",
+  "3" = "2 hours",
+  "4" = "1 hour",
+  "5" = "Less than 1 hour",
+  "99" = NA
+)
+
+# fvq_bmconst_bl
+# please make into 3
+# categories: never / occ,
+# sometimes, and most / all the
+# time for analyses
+# 1 Never
+# 2 Occasionally3 Sometimes
+# 4 Most of the time
+# 5 All the time
+# 99 Choose not to answer
+
+bmconst_fmt <- c(
+  "1" = "Never/Occasionally",
+  "2" = "Never/Occasionally",
+  "3" = "Sometimes",
+  "4" = "Most/All the time",
+  "5" = "Most/All the time",
+  "99" = NA
+)
+
+# fvq_bmconsist_bl
+# report as continuous and also in 3 categories: 1-2 (firm); 3-4 (normal), 5-7 (loose)
+bmconsist_fmt <- c(
+  "1" = "Firm",
+  "2" = "Firm",
+  "3" = "Normal",
+  "4" = "Normal",
+  "5" = "Loose",
+  "6" = "Loose",
+  "7" = "Loose",
+  "99" = NA
+)
+
+# Ever talked to healthcare provider about urine
+# 0 No
+# 1 Yes, but it was not very helpful
+# 2 Yes, and it was helpful
+# 99 Choose not to answer
+seekhelp_fmt <- c(
+  "0" = "No",
+  "1" = "Yes, but it was not very helpful",
+  "2" = "Yes, and it was helpful",
+  "99" = NA
+)
+
+# Types of urinary incontinence
+# if 1 = no UI, if 2 = urge UI, if 3 and/or 5 = stress UI; if 2 AND (3 or 5) =  mixed UI; all others = other UI
+
+# Function to categorize UI
+
+ui_type <- function(x1, x2, x3, x4, x5, x99){
+  y <- ifelse(x1 == 1, "No UI",
+         ifelse(x2 == 1 & (x3 == 1 | x5 == 1), "Mixed UI",
+                ifelse(x2 == 1, "Urge UI",
+                       ifelse(x3 == 1 | x5 == 1, "Stress UI",
+                              ifelse(x99 == 1, NA, "Other UI")))))
+  factor(y, levels = c("No UI", "Urge UI", "Stress UI",  "Mixed UI", "Other UI"))
+}
+
 ```
 
 ```{r}
@@ -418,14 +547,114 @@ df_beth0 <- df_beh |>
     fiber_score_1mo = fruit_1mo + grnsalad_1mo + potato_1mo + vegetable_1mo + vegetjuice_1mo + vegetsoup_1mo + cereal_1mo + wheat_bread_1mo + beans_1mo,
     fiber_score_3mo = fruit_3mo + grnsalad_3mo + potato_3mo + vegetable_3mo + vegetjuice_3mo + vegetsoup_3mo + cereal_3mo + wheat_bread_3mo + beans_3mo,
     fiber_score_6mo = fruit_6mo + grnsalad_6mo + potato_6mo + vegetable_6mo + vegetjuice_6mo + vegetsoup_6mo + cereal_6mo + wheat_bread_6mo + beans_6mo,
+    # Pad use
+    panty_liner_bl = usecontainprod_bl___1,
+    pads_bl = usecontainprod_bl___2,
+    undergarments_bl = usecontainprod_bl___3,
+    something_else_bl = usecontainprod_bl___4,
+    nothing_bl = usecontainprod_bl___5,
+    panty_liner_1mo = usecontainprod_1mo___1,
+    pads_1mo = usecontainprod_1mo___2,
+    undergarments_1mo = usecontainprod_1mo___3,
+    something_else_1mo = usecontainprod_1mo___4,
+    nothing_1mo = usecontainprod_1mo___5,
+    panty_liner_3mo = coalesce(usecontainprod_3mo___1, usecontainprod_3mo_t___1),
+    pads_3mo = coalesce(usecontainprod_3mo___2, usecontainprod_3mo_t___2),
+    undergarments_3mo = coalesce(usecontainprod_3mo___3, usecontainprod_3mo_t___3),
+    something_else_3mo = coalesce(usecontainprod_3mo___4, usecontainprod_3mo_t___4),
+    nothing_3mo = coalesce(usecontainprod_3mo___5, usecontainprod_3mo_t___5),
+    panty_liner_6mo = coalesce(usecontainprod_6mo___1, usecontainprod_6mo_t___1),
+    pads_6mo = coalesce(usecontainprod_6mo___2, usecontainprod_6mo_t___2),
+    undergarments_6mo = coalesce(usecontainprod_6mo___3, usecontainprod_6mo_t___3),
+    something_else_6mo = coalesce(usecontainprod_6mo___4, usecontainprod_6mo_t___4),
+    nothing_6mo = coalesce(usecontainprod_6mo___5, usecontainprod_6mo_t___5),
+    # How many
+    # Panty liners per 24 hours
+    use_liner_bl = miss99(use_liner_bl),
+    use_liner_1mo = miss99(use_liner_1mo),
+    use_liner_3mo = miss99(coalesce(parse_number(use_liner_3mo), use_liner_3mo_t)),
+    use_liner_6mo = miss99(coalesce(use_liner_6mo, use_liner_6mo_t)),
+    # Pads per 24 hours
+    use_pads_bl = miss99(use_pads_bl),
+    use_pads_1mo = miss99(use_pads_1mo),
+    use_pads_3mo = miss99(coalesce(use_pads_3mo, use_pads_3mo_t)),
+    use_pads_6mo = miss99(coalesce(use_pads_6mo, parse_number(use_pads_6mo_t))),
+    # Undergarments per 24 hours
+    use_depends_bl = miss99(use_depends_bl),
+    use_depends_1mo = miss99(use_depends_1mo),
+    use_depends_3mo = miss99(coalesce(use_depends_3mo, use_depends_3mo_t)),
+    use_depends_6mo = miss99(coalesce(parse_number(use_depends_6mo), use_depends_6mo_t)),
+    # Estimated money spent in the last month
+    incont_money_bl = refmt(incont_money_bl, money_fmt),
+    incont_money_1mo = refmt(incont_money_1mo, money_fmt),
+    incont_money_3mo = refmt(coalesce(incont_money_3mo, incont_money_3mo_t), money_fmt),
+    incont_money_6mo = refmt(coalesce(incont_money_6mo, incont_money_6mo_t), money_fmt),
+    # On an average night
+    # Estimated voids overnight
+    voidsovernight_bl = miss99(voidsovernight_bl),
+    voidsovernight_1mo = miss99(voidsovernight_1mo),
+    voidsovernight_3mo = miss99(coalesce(voidsovernight_3mo, voidsovernight_3mo_t)),
+    voidsovernight_6mo = miss99(coalesce(voidsovernight_6mo, voidsovernight_6mo_t)),
+    # Estimated voids during the day
+    daytimevoids_bl = refmt(daytimevoids_bl, daytimevoids_fmt),
+    daytimevoids_1mo = refmt(daytimevoids_1mo, daytimevoids_fmt),
+    daytimevoids_3mo = refmt(coalesce(daytimevoids_3mo, daytimevoids_3mo_t), daytimevoids_fmt),
+    daytimevoids_6mo = refmt(coalesce(daytimevoids_6mo, daytimevoids_6mo_t), daytimevoids_fmt),
+    # Time between trips to toilet
+    voidinterval_bl = refmt(voidinterval_bl, voidinterval_fmt),
+    voidinterval_1mo = refmt(voidinterval_1mo, voidinterval_fmt),
+    voidinterval_3mo = refmt(coalesce(voidinterval_3mo, voidinterval_3mo_t), voidinterval_fmt),
+    voidinterval_6mo = refmt(coalesce(voidinterval_6mo, voidinterval_6mo_t), voidinterval_fmt),
+    
+    # Current Symptoms
+    # Constipation frequency last month
+    fvq_bmconst_bl = refmt(fvq_bmconst_bl, bmconst_fmt),
+    fvq_bmconst_1mo = refmt(fvq_bmconst_1mo, bmconst_fmt),
+    fvq_bmconst_3mo = refmt(coalesce(fvq_bmconst_3mo, fvq_bmconst_3mo_t), bmconst_fmt),
+    fvq_bmconst_6mo = refmt(coalesce(fvq_bmconst_6mo, fvq_bmconst_6mo_t), bmconst_fmt),
+    # Diarrhea frequency last month
+    fvq_bmdiarr_bl = refmt(fvq_bmdiarr_bl, bmconst_fmt),
+    fvq_bmdiarr_1mo = refmt(fvq_bmdiarr_1mo, bmconst_fmt),
+    fvq_bmdiarr_3mo = refmt(coalesce(fvq_bmdiarr_3mo, fvq_bmdiarr_3mo_t), bmconst_fmt),
+    fvq_bmdiarr_6mo = refmt(coalesce(fvq_bmdiarr_6mo, fvq_bmdiarr_6mo_t), bmconst_fmt),
+    # Bristol stool type score (1-7)
+    fvq_bmconsist_bl = miss99(fvq_bmconsist_bl),
+    fvq_bmconsist_1mo = miss99(fvq_bmconsist_1mo),
+    fvq_bmconsist_3mo = miss99(coalesce(fvq_bmconsist_3mo, fvq_bmconsist_3mo_t)),
+    fvq_bmconsist_6mo = miss99(coalesce(fvq_bmconsist_6mo, fvq_bmconsist_6mo_t)),
+    # Bristol stool type category
+    # 1-2 (firm); 3-4 (normal), 5-7 (loose)
+    fvq_bmconsist_cat_bl = refmt(fvq_bmconsist_bl, bmconsist_fmt),
+    fvq_bmconsist_cat_1mo = refmt(fvq_bmconsist_1mo, bmconsist_fmt),
+    fvq_bmconsist_cat_3mo = refmt(coalesce(fvq_bmconsist_3mo, fvq_bmconsist_3mo_t), bmconsist_fmt),
+    fvq_bmconsist_cat_6mo = refmt(coalesce(fvq_bmconsist_6mo, fvq_bmconsist_6mo_t), bmconsist_fmt),
+    # Types of urinary incontinence
+    # if 1 = no UI, if 2 = urge UI, if 3 and/or 5 = stress UI; if 2 AND (3 or 5) =  mixed UI; all others = other UI
+    iciqui_urineleak_cat_bl = ui_type(iciqui_urineleak_bl___1, iciqui_urineleak_bl___2, iciqui_urineleak_bl___3, iciqui_urineleak_bl___4, iciqui_urineleak_bl___5, iciqui_urineleak_bl___99),
+    iciqui_urineleak_cat_1mo = ui_type(iciqui_urineleak_1mo___1, iciqui_urineleak_1mo___2, iciqui_urineleak_1mo___3, iciqui_urineleak_1mo___4, iciqui_urineleak_1mo___5, iciqui_urineleak_1mo___99),
+    iciqui_urineleak_cat_3mo = ui_type(coalesce(iciqui_urineleak_3mo___1, iciqui_urineleak_3mo_t___1), coalesce(iciqui_urineleak_3mo___2, iciqui_urineleak_3mo_t___2), coalesce(iciqui_urineleak_3mo___3, iciqui_urineleak_3mo_t___3), coalesce(iciqui_urineleak_3mo___4, iciqui_urineleak_3mo_t___4), coalesce(iciqui_urineleak_3mo___5, iciqui_urineleak_3mo_t___5), coalesce(iciqui_urineleak_3mo___99, iciqui_urineleak_3mo_t___99)),
+    iciqui_urineleak_cat_6mo = ui_type(coalesce(iciqui_urineleak_6mo___1, iciqui_urineleak_6mo_t___1), coalesce(iciqui_urineleak_6mo___2, iciqui_urineleak_6mo_t___2), coalesce(iciqui_urineleak_6mo___3, iciqui_urineleak_6mo_t___3), coalesce(iciqui_urineleak_6mo___4, iciqui_urineleak_6mo_t___4), coalesce(iciqui_urineleak_6mo___5, iciqui_urineleak_6mo_t___5), coalesce(iciqui_urineleak_6mo___99, iciqui_urineleak_6mo_t___99)),
+    
+    
+    
+    # Ever talked to healthcare provider about urine
+    bladderseekhx_bl  = refmt(bladderseekhx_bl, seekhelp_fmt ),
+    bladderseekhx_1mo = NA,
+    bladderseekhx_3mo = refmt(coalesce(bladderseekhx_3mo, bladderseekhx_3mo_t), seekhelp_fmt ),
+    bladderseekhx_6mo = refmt(coalesce(bladderseekhx_6mo, bladderseekhx_6mo_t), seekhelp_fmt ),
+    # Ever talked to healthcare provider about stool
+    bowelseekhx_bl  = refmt(bowelseekhx_bl, seekhelp_fmt ),
+    bowelseekhx_1mo = NA,
+    bowelseekhx_3mo = refmt(coalesce(bowelseekhx_3mo, bowelseekhx_3mo_t), seekhelp_fmt ),
+    bowelseekhx_6mo = refmt(coalesce(bowelseekhx_6mo, bowelseekhx_6mo_t), seekhelp_fmt ),
     
     # Randomization status
     rand_round_2 = refmt(rand_round_2, armfmt)
   ) 
   
 # 
- # df_beh |>
- #   count(rand_round_2, beans_6mo, beans_6mo_t)
+ # df_beth0 |>
+ #   count(rand_round_2, iciqui_urineleak_cat_6mo)
 
 # create UI scores at baseline, 1 month, 3 months, and 6 months
 df_beh1 <- df_beth0 |> 
@@ -455,7 +684,34 @@ df_behx <- df_beh1 |>
    contains("est_totalfluid"),
    contains("freq_coffee"),
    contains("freq_soda"),
-   contains("fiber_score")
+   contains("fiber_score"),
+   contains("panty_liner"),
+   contains("pads"),
+   contains("undergarments"),
+   contains("something_else"),
+   contains("nothing"),
+   contains("use_liner"),
+   contains("use_pads"),
+   contains("use_depends"),
+   contains("incont_money"),
+   contains("voidsovernight"),
+   contains("daytimevoids"),
+   contains("voidinterval"),
+   # Current Symptoms
+   contains("fvq_bmconst"),
+   contains("fvq_bmdiarr"),
+   contains("fvq_bmconsist"),
+   contains("fvq_bmconsist_cat"),
+   # UI type
+   contains("iciqui_urineleak_cat"),
+   # Seek help
+   contains("bladderseekhx"),
+   contains("bowelseekhx")
+   
+   
+   
+   
+   
    
   )
   
@@ -470,8 +726,24 @@ df_behx_bl <- df_behx |>
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
     est_totalfluid, freq_coffee, freq_soda,
-    fiber_score
+    fiber_score, 
+    # pad use
+    panty_liner, pads, undergarments, something_else, nothing,
+    # how many
+    use_liner, use_pads, use_depends,
+    # money spent
+    incont_money,
+    voidsovernight, 
+    daytimevoids, voidinterval,
+    # Current Symptoms
+    fvq_bmconst, fvq_bmdiarr, fvq_bmconsist, fvq_bmconsist_cat,
+    # UI type
+    iciqui_urineleak_cat,
+    # Seek help
+    bladderseekhx, bowelseekhx
+    
   )
+
 # 1 month
 df_behx_1mo <- df_behx |> 
   rename_with(~ str_remove(.x, "_1mo$")) |> 
@@ -483,7 +755,21 @@ df_behx_1mo <- df_behx |>
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
     est_totalfluid, freq_coffee, freq_soda,
-    fiber_score
+    fiber_score, 
+    # pad use
+    panty_liner, pads, undergarments, something_else, nothing,
+    # how many
+    use_liner, use_pads, use_depends,
+    # money spent
+    incont_money,
+    voidsovernight, 
+    daytimevoids, voidinterval,
+    # Current Symptoms
+    fvq_bmconst, fvq_bmdiarr, fvq_bmconsist, fvq_bmconsist_cat,
+    # UI type
+    iciqui_urineleak_cat,
+    # Seek help
+    bladderseekhx, bowelseekhx
   )
 
 # 3 month
@@ -497,7 +783,21 @@ df_behx_3mo <- df_behx |>
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
     est_totalfluid, freq_coffee, freq_soda,
-    fiber_score
+    fiber_score, 
+    # pad use
+    panty_liner, pads, undergarments, something_else, nothing,
+    # how many
+    use_liner, use_pads, use_depends,
+    # money spent
+    incont_money,
+    voidsovernight, 
+    daytimevoids, voidinterval,
+    # Current Symptoms
+    fvq_bmconst, fvq_bmdiarr, fvq_bmconsist, fvq_bmconsist_cat,
+    # UI type
+    iciqui_urineleak_cat,
+    # Seek help
+    bladderseekhx, bowelseekhx
   )
 
 # 6 month
@@ -511,7 +811,21 @@ df_behx_6mo <- df_behx |>
     bitus_lastmo, bitus_intend, bitus_predict,
     kegel_freq, fiber_guess, fluid_guess,
     est_totalfluid, freq_coffee, freq_soda,
-    fiber_score
+    fiber_score, 
+    # pad use
+    panty_liner, pads, undergarments, something_else, nothing,
+    # how many
+    use_liner, use_pads, use_depends,
+    # money spent
+    incont_money,
+    voidsovernight, 
+    daytimevoids, voidinterval,
+    # Current Symptoms
+    fvq_bmconst, fvq_bmdiarr, fvq_bmconsist, fvq_bmconsist_cat,
+    # UI type
+    iciqui_urineleak_cat,
+    # Seek help
+    bladderseekhx, bowelseekhx
   )
 
 ```
@@ -691,4 +1005,136 @@ tbl_merge(list(quest_tbl_base, quest_tbl_1mo, quest_tbl_3mo, quest_tbl_6mo),
 
 
 ```
+
+
+@tbl-pad-use summarizes the longitudinal data on pad use and patterns in using the toilet at baseline, 1 month, 3 months, and 6 months.
+
+```{r}
+#| label: tbl-pad-use
+#| tbl-cap: Longitudinal responses on pad use and patterns in using the toilet.
+
+# Function to tabulate cross-sectional data
+# on pad use at baseline, 1 month, 3 months, and 6 months
+pad_use_tbl <- function(df_behx_xx){
+
+  df_behx_xx |> 
+    tbl_summary(
+      by = rand_round_2,
+      include = c(
+        panty_liner, pads, undergarments, something_else, nothing,
+        use_liner, use_pads, use_depends, incont_money, 
+        voidsovernight, daytimevoids, voidinterval
+      ),
+      type = list(
+        # panty_liner ~ "categorical",
+        # pads ~ "categorical",
+        # undergarments ~ "categorical",
+        # something_else ~ "categorical",
+        # nothing ~ "categorical",
+        use_liner ~ "continuous",
+        use_pads ~ "continuous",
+        use_depends ~ "continuous",
+        incont_money ~ "categorical",
+        voidsovernight ~ "continuous",
+        daytimevoids ~ "categorical",
+        voidinterval ~ "categorical"
+        
+      ),
+      label = list(
+        panty_liner ~ "Panty Liner Use",
+        pads ~ "Pads Use",
+        undergarments ~ "Undergarments Use",
+        something_else ~ "Something Else Use",
+        nothing ~ "Nothing Use",
+        use_liner ~ "Panty Liners per 24 hours",
+        use_pads ~ "Pads per 24 hours",
+        use_depends ~ "Undergarments per 24 hours",
+        incont_money ~ "Estimated Money Spent in the Last Month",
+        voidsovernight ~ "Estimated Voids Overnight",
+        daytimevoids ~ "Estimated Voids During the Day",
+        voidinterval ~ "Time Between Trips to Toilet"
+      ),
+      statistic = all_continuous() ~ "{mean} ({sd})",
+      digits = all_continuous() ~ 1
+    ) |> 
+    add_p() |> 
+    italicize_levels() |> 
+    bold_labels()
+
+}
+
+# Baseline
+pad_use_tbl_base <- pad_use_tbl(df_behx_bl)
+# 1 month
+pad_use_tbl_1mo <- pad_use_tbl(df_behx_1mo)
+# 3 month
+pad_use_tbl_3mo <- pad_use_tbl(df_behx_3mo)
+# 6 month
+pad_use_tbl_6mo <- pad_use_tbl(df_behx_6mo)
+# combine tables
+tbl_merge(list(pad_use_tbl_base, pad_use_tbl_1mo, pad_use_tbl_3mo, pad_use_tbl_6mo), 
+          tab_spanner = c("Baseline", "1 Month", "3 Months", "6 Months"))
+
+```
+
+
+
+
+## Current bladder/bowel symptoms
+@tbl-bladder-symptoms summarizes the longitudinal data on bladder/bowel symptoms at baseline, 1 month, 3 months, and 6 months.
+
+```{r}
+#| label: tbl-bladder-symptoms
+#| tbl-cap: Longitudinal responses on bladder/bowel symptoms.
+
+# Function to tabulate cross-sectional data
+# on bladder symptoms at baseline, 1 month, 3 months, and 6 months
+bladder_symptoms_tbl <- function(df_behx_xx){
+
+  df_behx_xx |> 
+    tbl_summary(
+      by = rand_round_2,
+      include = c(
+        fvq_bmconst, fvq_bmdiarr, fvq_bmconsist, fvq_bmconsist_cat,
+        iciqui_urineleak_cat, 
+        bladderseekhx, bowelseekhx
+      ),
+      type = list(
+        # fvq_bmconst ~ "continuous",
+        # fvq_bmdiarr ~ "continuous",
+        fvq_bmconsist ~ "continuous"
+        # iciqui_urineleak_cat ~ "categorical"
+      ),
+      label = list(
+        fvq_bmconst ~ "Constipation Frequency Last Month",
+        fvq_bmdiarr ~ "Diarrhea Frequency Last Month",
+        fvq_bmconsist ~ "Bristol Stool Type Score (1-7)",
+        fvq_bmconsist_cat ~ "Bristol Stool Type Category",
+        iciqui_urineleak_cat ~ "Types of Urinary Incontinence",
+        bladderseekhx ~ "Ever Talked to HP about Bladder Symptoms",
+        bowelseekhx ~ "Ever Talked to HP about Bowel Symptoms"
+      ),
+      statistic = all_continuous() ~ "{mean} ({sd})",
+      digits = all_continuous() ~ 1
+    ) |> 
+    add_p() |> 
+    italicize_levels() |> 
+    bold_labels()
+
+}
+
+# Baseline
+bladder_symptoms_tbl_base <- bladder_symptoms_tbl(df_behx_bl)
+# 1 month
+bladder_symptoms_tbl_1mo <- bladder_symptoms_tbl(df_behx_1mo)
+# 3 month
+bladder_symptoms_tbl_3mo <- bladder_symptoms_tbl(df_behx_3mo)
+# 6 month
+bladder_symptoms_tbl_6mo <- bladder_symptoms_tbl(df_behx_6mo)
+# combine tables
+tbl_merge(list(bladder_symptoms_tbl_base, bladder_symptoms_tbl_1mo, bladder_symptoms_tbl_3mo, bladder_symptoms_tbl_6mo), 
+          tab_spanner = c("Baseline", "1 Month", "3 Months", "6 Months"))
+
+```
+
 
